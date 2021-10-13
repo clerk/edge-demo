@@ -92,7 +92,7 @@ async function verifyToken(token) {
         // );
 
         // This hack should make jwtVerify work
-        globalThis.CryptoKey = pubKey.constructor;
+        //globalThis.CryptoKey = pubKey.constructor;
 
         // const pubKey = await crypto.subtle.importKey('jwk', jwk, { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, true, ['verify']);
 
