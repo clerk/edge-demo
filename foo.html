@@ -6,6 +6,18 @@
 
       const pubKey = '-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAt3cmtkqQSWgUGiTz2j85\nWDHpozSHs9wAUEgzTnBQTEq7LBPQ/zSn4tHxI+7IO7J/EdjLI77dwh55DllEchY7\nboXR+nuuu56itC+pJq9GMrPrnFo/33cl0eJrEBXq1OBw65H0/GP4boHelKt1gJF9\n+kEiGE/En1CqYkso3+ARJZoRZwSty3pCe41iUJxzTaPnMbsUbGRQFDjAzfx3CpsP\nUloJr7+iscgkwZvkchc7b3DNyflOtVms20fNLN9COv0D4U7eu7ylmLKK5FZ5j05s\nySA9Ztsj3Vk5gKrKud1ESJ7dMYrOuKr5JPI/lhfO/NhajOUwXAex4YM6crJpyLNG\n7QIDAQAB\n-----END PUBLIC KEY-----'.replace(/\\n/g, '\n');
 
+      function isExpired(decodedToken) {
+        const claims = decodedToken.payload
+        const now = Date.now().valueOf() / 1000
+
+        if (typeof claims.exp !== 'undefined' && claims.exp < now) {
+            throw new Error(`token expired: ${JSON.stringify(claims)}`)
+        }
+        if (typeof claims.nbf !== 'undefined' && claims.nbf > now) {
+            throw new Error(`token expired: ${JSON.stringify(claims)}`)
+        }
+      }
+
       function decodeJwt(token) {
         const parts = token.split('.');
         const header = JSON.parse(atob(parts[0]));
@@ -56,13 +68,18 @@
                   ['verify']
               );
 
-              // verify token
 
               const decodedToken = decodeJwt(token);
               const encoder = new TextEncoder();
               const data = encoder.encode([decodedToken.raw.header, decodedToken.raw.payload].join('.'));
-              console.log('data: ', JSON.parse(atob(decodedToken.raw.payload)));
               const signature = new Uint8Array(Array.from(decodedToken.signature).map(c => c.charCodeAt(0)));
+
+              // verify exp+nbf
+              if (isExpired(decodedToken)) {
+                return false;
+              }
+
+              // verify signature
               return crypto.subtle.verify('RSASSA-PKCS1-v1_5', key, signature, data)
           } catch (e) {
               console.log('error occured in retrieveJWK(): ', e)

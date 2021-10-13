@@ -52,8 +52,7 @@ async function verifyToken(token) {
       // parse the public key to a CryptoKey:
       // fetch the part of the PEM string between header and footer
       // taken from https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/importKey#subjectpublickeyinfo_import
-      const pemHeader = "-----BEGIN PUBLIC KEY-----";
-      const pemFooter = "-----END PUBLIC KEY-----";
+      const pemHeader = "-----BEGIN PUBLIC KEY-----"; const pemFooter = "-----END PUBLIC KEY-----";
       const pemContents = pubKey.substring(pemHeader.length, pubKey.length - pemFooter.length);
 
       // base64 decode the string to get the binary data
@@ -74,17 +73,23 @@ async function verifyToken(token) {
           ['verify']
       );
 
-      // verify token
+      // decode+verify token
       const decodedToken = decodeJwt(token);
+
+      // verify exp+nbf
+      if (isExpired(decodedToken)) {
+        return false;
+      }
+
+      // verify signature
       const encoder = new TextEncoder();
       const data = encoder.encode([decodedToken.raw.header, decodedToken.raw.payload].join('.'));
       const signature = new Uint8Array(Array.from(decodedToken.signature).map(c => c.charCodeAt(0)));
       const verified = await crypto.subtle.verify('RSASSA-PKCS1-v1_5', key, signature, data)
-
       if (verified) {
         return JSON.parse(atob(decodedToken.raw.payload));
       } else {
-        return;
+        return false;
       }
     } catch (e) {
         console.log('verify token error: ', e)
@@ -115,3 +120,17 @@ function decodeJwt(token) {
   }
 }
 
+function isExpired(decodedToken) {
+  const claims = decodedToken.payload
+  const now = Date.now().valueOf() / 1000
+
+  if (typeof claims.exp !== 'undefined' && claims.exp < now) {
+    return true;
+  }
+
+  if (typeof claims.nbf !== 'undefined' && claims.nbf > now) {
+    return true;
+  }
+
+  return false;
+}
