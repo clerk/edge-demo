@@ -47,6 +47,8 @@ async function verifyToken(token) {
         return;
     }
     try {
+        console.log('token to be verified: ', token)
+
         const jwk = await retrieveJWK()
         console.log('retrieveJWK(): ', jwk)
 
@@ -58,17 +60,10 @@ async function verifyToken(token) {
             n: "t3cmtkqQSWgUGiTz2j85WDHpozSHs9wAUEgzTnBQTEq7LBPQ_zSn4tHxI-7IO7J_EdjLI77dwh55DllEchY7boXR-nuuu56itC-pJq9GMrPrnFo_33cl0eJrEBXq1OBw65H0_GP4boHelKt1gJF9-kEiGE_En1CqYkso3-ARJZoRZwSty3pCe41iUJxzTaPnMbsUbGRQFDjAzfx3CpsPUloJr7-iscgkwZvkchc7b3DNyflOtVms20fNLN9COv0D4U7eu7ylmLKK5FZ5j05sySA9Ztsj3Vk5gKrKud1ESJ7dMYrOuKr5JPI_lhfO_NhajOUwXAex4YM6crJpyLNG7Q",
             e: "AQAB"
         })
-        console.log('after jose import jwk', pubKey)
-        console.log(token)
+        console.log('jose.importJWK(): ', JSON.stringify(pubKey))
 
-        // const ok = await crypto.subtle.verify('RSASSA-PKCS1-v1_5', process.env.CLERK_PUBLIC_KEY, token.split('.')[2], token.split('.')[1])
-        // console.log(ok)
-        // if (!ok) {
-        //     throw new Error('Not ok')
-        // }
 
         const {payload} = await jwtVerify(token, pubKey, {algorithms: ['RS256']})
-
         console.log('after verify', payload)
 
         if (!payload.iss || !(payload.iss?.lastIndexOf('https://clerk.', 0) === 0)) {
@@ -110,6 +105,7 @@ async function retrieveJWK() {
         console.log('binaryDer (ArrayBuffer): ', binaryDer.toString());
         console.log('binaryDer (ArrayBuffer.byteLength): ', binaryDer.byteLength);
 
+        // construct the CryptoKey
         const key = await crypto.subtle.importKey(
             'spki',
             binaryDer,
@@ -123,13 +119,9 @@ async function retrieveJWK() {
 
         console.log('crypto.subtle.importKey(): ', key)
 
-        const exportedkey = crypto.subtle.exportKey('jwk', key);
-        console.log('crypto.sutble.exportKey(): ', exportedkey)
-        console.log('crypto.sutble.exportKey() (.jwk field) ', exportedkey.jwk)
-
-        return exportedkey
+        return crypto.subtle.exportKey('jwk', key);
     } catch (e) {
-        console.log('retrieve jwk error', e)
+        console.log('error occured in retrieveJWK(): ', e)
         throw new Error(e)
     }
 }
