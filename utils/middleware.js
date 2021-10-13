@@ -46,66 +46,75 @@ async function verifyToken(token) {
     if (!token) {
         return;
     }
-    console.log('3')
-    const jwk = await retrieveJWK()
-    console.log('after retrieve jwk')
-    const pubKey = importJWK(jwk)
-    console.log('after jose import jwk')
+    try {
+        const jwk = await retrieveJWK()
+        console.log('after retrieve jwk', jwk)
+        const pubKey = importJWK(jwk)
+        console.log('after jose import jwk', pubKey)
 
-    console.log(token)
+        console.log(token)
 
-    // const ok = await crypto.subtle.verify('RSASSA-PKCS1-v1_5', process.env.CLERK_PUBLIC_KEY, token.split('.')[2], token.split('.')[1])
-    // console.log(ok)
-    // if (!ok) {
-    //     throw new Error('Not ok')
-    // }
+        // const ok = await crypto.subtle.verify('RSASSA-PKCS1-v1_5', process.env.CLERK_PUBLIC_KEY, token.split('.')[2], token.split('.')[1])
+        // console.log(ok)
+        // if (!ok) {
+        //     throw new Error('Not ok')
+        // }
 
-    const { payload } = await jwtVerify(token, pubKey, {algorithms: ['RS256']})
+        const {payload} = await jwtVerify(token, pubKey, {algorithms: ['RS256']})
 
-    console.log('after verify')
+        console.log('after verify', payload)
 
-    if (!payload.iss || !(payload.iss?.lastIndexOf('https://clerk.', 0) === 0)) {
-        throw new Error(`Invalid issuer: ${payload.iss}`)
+        if (!payload.iss || !(payload.iss?.lastIndexOf('https://clerk.', 0) === 0)) {
+            throw new Error(`Invalid issuer: ${payload.iss}`)
+        }
+
+        return payload
+    } catch (e) {
+        console.log('verify token error', e)
+        throw new Error(e)
     }
-
-    return payload
 }
 
 async function retrieveJWK() {
-    const pubKey = process.env.CLERK_PUBLIC_KEY.replace(/\\n/g, '\n');
-    if (!pubKey) {
-        throw new Error('Missing public key')
+    try {
+        const pubKey = process.env.CLERK_PUBLIC_KEY.replace(/\\n/g, '\n');
+        if (!pubKey) {
+            throw new Error('Missing public key')
+        }
+
+        console.log(pubKey)
+
+        // fetch the part of the PEM string between header and footer
+        const pemHeader = "-----BEGIN PUBLIC KEY-----";
+        const pemFooter = "-----END PUBLIC KEY-----";
+        const pemContents = pubKey.substring(pemHeader.length, pubKey.length - pemFooter.length);
+        console.log(pemContents)
+        // base64 decode the string to get the binary data
+        const binaryDerString = atob(pemContents);
+        console.log('after atob')
+        // convert from a binary string to an ArrayBuffer
+        const binaryDer = str2ab(binaryDerString);
+
+        console.log('before crypto import key', binaryDer)
+
+        const key = await crypto.subtle.importKey(
+            'spki',
+            binaryDer,
+            {
+                name: 'RSASSA-PKCS1-v1_5',
+                hash: 'SHA-256'
+            },
+            true,
+            ['verify']
+        );
+
+        console.log('after crypto import key', key)
+
+        return crypto.subtle.exportKey('jwk', key);
+    } catch (e) {
+        console.log('retrieve jwk error', e)
+        throw new Error(e)
     }
-
-    console.log(pubKey)
-
-    // fetch the part of the PEM string between header and footer
-    const pemHeader = "-----BEGIN PUBLIC KEY-----";
-    const pemFooter = "-----END PUBLIC KEY-----";
-    const pemContents = pubKey.substring(pemHeader.length, pubKey.length - pemFooter.length);
-    console.log(pemContents)
-    // base64 decode the string to get the binary data
-    const binaryDerString = atob(pemContents);
-    console.log('after atob')
-    // convert from a binary string to an ArrayBuffer
-    const binaryDer = str2ab(binaryDerString);
-
-    console.log('before crypto import key')
-
-    const key = await crypto.subtle.importKey(
-        'spki',
-        binaryDer,
-        {
-            name: 'RSASSA-PKCS1-v1_5',
-            hash: 'SHA-256'
-        },
-        true,
-        ['verify']
-    );
-
-    console.log('after crypto import key')
-
-    return crypto.subtle.exportKey('jwk', key);
 }
 
 // Convert a string into an ArrayBuffer from https://developers.google.com/web/updates/2012/06/How-to-convert-ArrayBuffer-to-and-from-String
