@@ -48,7 +48,8 @@ async function verifyToken(token) {
     }
     try {
         const jwk = await retrieveJWK()
-        console.log('after retrieve jwk', jwk)
+        console.log('retrieveJWK(): ', jwk)
+
         const pubKey = importJWK({
             use: "sig",
             kty: "RSA",
@@ -81,6 +82,7 @@ async function verifyToken(token) {
     }
 }
 
+// parse a public key in PEM format and construct a CryptoKey JWK
 async function retrieveJWK() {
     try {
         const pubKey = process.env.CLERK_PUBLIC_KEY.replace(/\\n/g, '\n');
@@ -91,6 +93,8 @@ async function retrieveJWK() {
         console.log(pubKey)
 
         // fetch the part of the PEM string between header and footer
+        // taken from
+        // https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/importKey#subjectpublickeyinfo_import
         const pemHeader = "-----BEGIN PUBLIC KEY-----";
         const pemFooter = "-----END PUBLIC KEY-----";
         const pemContents = pubKey.substring(pemHeader.length, pubKey.length - pemFooter.length);
@@ -103,7 +107,7 @@ async function retrieveJWK() {
 
         // convert from a binary string to an ArrayBuffer
         const binaryDer = str2ab(binaryDerString);
-        console.log('binaryDer (ArrayBuffer): ', binaryDer);
+        console.log('binaryDer (ArrayBuffer): ', binaryDer.toString());
         console.log('binaryDer (ArrayBuffer.byteLength): ', binaryDer.byteLength);
 
         const key = await crypto.subtle.importKey(
@@ -121,6 +125,7 @@ async function retrieveJWK() {
 
         const exportedkey = crypto.subtle.exportKey('jwk', key);
         console.log('crypto.sutble.exportKey(): ', exportedkey)
+        console.log('crypto.sutble.exportKey() (.jwk field) ', exportedkey.jwk)
 
         return exportedkey
     } catch (e) {
