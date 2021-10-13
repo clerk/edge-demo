@@ -24,16 +24,15 @@ export default function requireSession(handler) {
             }
 
             if (!sessionClaims) {
-                throw new Error('Missing session token')
+                throw new Error('Missing session token or token invalid')
             }
 
             // @ts-ignore
             req.session = {id: sessionClaims.sid, userId: sessionClaims.sub};
 
-            // next();
             handler(req, res, next)
         } catch (error) {
-            console.log('Error', error)
+            console.log('Error: ', error)
             res.status(500).send(error)
         }
     }
@@ -82,12 +81,13 @@ async function verifyToken(token) {
       const signature = new Uint8Array(Array.from(decodedToken.signature).map(c => c.charCodeAt(0)));
       const verified = crypto.subtle.verify('RSASSA-PKCS1-v1_5', key, signature, data)
 
-      console.log('token data: ', decodedToken.raw.payload)
-      console.log('verified result: ', verified)
-
-      return verified
+      if verified {
+        return JSON.parse(atob(data));
+      } else {
+        return;
+      }
     } catch (e) {
-        console.log('verify token error', e)
+        console.log('verify token error: ', e)
         throw new Error(e)
     }
 }
