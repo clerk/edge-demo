@@ -92,7 +92,7 @@ async function verifyToken(token) {
         // );
 
         // const pubKey = await crypto.subtle.importKey('spki', jwk, { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, true, ['verify']);
-        const pubKey = await crypto.subtle.importKey('spki', str2ab(process.env.CLERK_PUBLIC_KEY), { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, true, ['verify']);
+        const pubKey = await crypto.subtle.importKey('spki', str2ab(process.env.CLERK_PUBLIC_KEY), { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, true, ['encrypt']);
 
         // console.log('after jose import jwk', pubKey)
 
