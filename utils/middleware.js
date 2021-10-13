@@ -94,14 +94,16 @@ async function retrieveJWK() {
         const pemHeader = "-----BEGIN PUBLIC KEY-----";
         const pemFooter = "-----END PUBLIC KEY-----";
         const pemContents = pubKey.substring(pemHeader.length, pubKey.length - pemFooter.length);
-        console.log(pemContents)
+
+        console.log('pemContents: ', pemContents)
+
         // base64 decode the string to get the binary data
         const binaryDerString = atob(pemContents);
-        console.log('after atob')
+        console.log('binaryDerString: ', binaryDerString)
+
         // convert from a binary string to an ArrayBuffer
         const binaryDer = str2ab(binaryDerString);
-
-        console.log('before crypto import key', binaryDer)
+        console.log('binaryDer (ArrayBuffer): ' binaryDer)
 
         const key = await crypto.subtle.importKey(
             'spki',
@@ -114,9 +116,12 @@ async function retrieveJWK() {
             ['verify']
         );
 
-        console.log('after crypto import key', key)
+        console.log('crypto.subtle.importKey(): ', key)
 
-        return crypto.subtle.exportKey('jwk', key);
+        const exportedkey = crypto.subtle.exportKey('jwk', key);
+        console.log('crypto.sutble.exportKey(): ', exportedkey)
+
+        return exportedkey
     } catch (e) {
         console.log('retrieve jwk error', e)
         throw new Error(e)
