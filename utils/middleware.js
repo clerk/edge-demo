@@ -49,11 +49,11 @@ async function verifyToken(token) {
     try {
         console.log('token to be verified: ', token)
 
-        const jwk = await retrieveJWK()
-        console.log('retrieveJWK(): ', jwk)
+        const pubKey = await retrieveJWK();
+        console.log('retrieveJWK(): ', pubKey)
 
-        const pubKey = importJWK(jwk)
-        console.log('jose.importJWK(): ', JSON.stringify(pubKey))
+//        const pubKey = importJWK(jwk)
+//        console.log('jose.importJWK(): ', JSON.stringify(pubKey))
 
         const {payload} = await jwtVerify(token, pubKey, {algorithms: ['RS256']})
         console.log('after verify', payload)
@@ -109,9 +109,11 @@ async function retrieveJWK() {
             ['verify']
         );
 
-        console.log('crypto.subtle.importKey(): ', key)
+        return key;
 
-        return crypto.subtle.exportKey('jwk', key);
+//        console.log('crypto.subtle.importKey(): ', key)
+//
+//        return crypto.subtle.exportKey('jwk', key);
     } catch (e) {
         console.log('error occured in retrieveJWK(): ', e)
         throw new Error(e)
