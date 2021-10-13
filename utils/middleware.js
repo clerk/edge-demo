@@ -82,7 +82,7 @@ async function verifyToken(token) {
       const verified = crypto.subtle.verify('RSASSA-PKCS1-v1_5', key, signature, data)
 
       if (verified) {
-        return JSON.parse(atob(data));
+        return JSON.parse(atob(decodedToken.raw.payload));
       } else {
         return;
       }
