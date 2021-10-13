@@ -1,6 +1,3 @@
-import { jwtVerify } from 'jose/jwt/verify';
-import { importJWK } from 'jose/key/import'
-
 export default function requireSession(handler) {
     return async function(req, res, next) {
         try {
@@ -47,73 +44,49 @@ async function verifyToken(token) {
         return;
     }
     try {
-        console.log('token to be verified: ', token)
+      // load the public key from env
+      const pubKey = process.env.CLERK_PUBLIC_KEY.replace(/\\n/g, '\n');
+      if (!pubKey) {
+          throw new Error('Missing public key')
+      }
 
-        const pubKey = await retrieveJWK();
-        console.log('retrieveJWK(): ', pubKey)
-        console.log('CryptoKey.algorithm.publicExponent.toString(): ', pubKey.algorithm.publicExponent.buffer)
+      // parse the public key to a CryptoKey:
+      // fetch the part of the PEM string between header and footer
+      // taken from https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/importKey#subjectpublickeyinfo_import
+      const pemHeader = "-----BEGIN PUBLIC KEY-----";
+      const pemFooter = "-----END PUBLIC KEY-----";
+      const pemContents = pubKey.substring(pemHeader.length, pubKey.length - pemFooter.length);
 
-        const {payload} = await jwtVerify(token, pubKey, {algorithms: ['RS256']})
-        console.log('after verify', payload)
+      // base64 decode the string to get the binary data
+      const binaryDerString = atob(pemContents);
 
-        if (!payload.iss || !(payload.iss?.lastIndexOf('https://clerk.', 0) === 0)) {
-            throw new Error(`Invalid issuer: ${payload.iss}`)
-        }
+      // convert from a binary string to an ArrayBuffer
+      const binaryDer = str2ab(binaryDerString);
 
-        return payload
+      // construct the CryptoKey
+      const key = await crypto.subtle.importKey(
+          'spki',
+          binaryDer,
+          {
+              name: 'RSASSA-PKCS1-v1_5',
+              hash: 'SHA-256'
+          },
+          true,
+          ['verify']
+      );
+
+      // verify token
+      const decodedToken = decodeJwt(token);
+      const encoder = new TextEncoder();
+      const data = encoder.encode([decodedToken.raw.header, decodedToken.raw.payload].join('.'));
+      const signature = new Uint8Array(Array.from(decodedToken.signature).map(c => c.charCodeAt(0)));
+      const verified = crypto.subtle.verify('RSASSA-PKCS1-v1_5', key, signature, data)
+
+      console.log('verified result: ', verified)
+
+      return verified
     } catch (e) {
         console.log('verify token error', e)
-        throw new Error(e)
-    }
-}
-
-// parse a public key in PEM format and construct a CryptoKey JWK
-async function retrieveJWK() {
-    try {
-        const pubKey = process.env.CLERK_PUBLIC_KEY.replace(/\\n/g, '\n');
-        if (!pubKey) {
-            throw new Error('Missing public key')
-        }
-
-        console.log(pubKey)
-
-        // fetch the part of the PEM string between header and footer
-        // taken from
-        // https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/importKey#subjectpublickeyinfo_import
-        const pemHeader = "-----BEGIN PUBLIC KEY-----";
-        const pemFooter = "-----END PUBLIC KEY-----";
-        const pemContents = pubKey.substring(pemHeader.length, pubKey.length - pemFooter.length);
-
-        console.log('pemContents: ', pemContents)
-
-        // base64 decode the string to get the binary data
-        const binaryDerString = atob(pemContents);
-        console.log('binaryDerString: ', binaryDerString)
-
-        // convert from a binary string to an ArrayBuffer
-        const binaryDer = str2ab(binaryDerString);
-        console.log('binaryDer (ArrayBuffer): ', binaryDer.toString());
-        console.log('binaryDer (ArrayBuffer.byteLength): ', binaryDer.byteLength);
-
-        // construct the CryptoKey
-        const key = await crypto.subtle.importKey(
-            'spki',
-            binaryDer,
-            {
-                name: 'RSASSA-PKCS1-v1_5',
-                hash: 'SHA-256'
-            },
-            true,
-            ['verify']
-        );
-
-        return key;
-
-//        console.log('crypto.subtle.importKey(): ', key)
-//
-//        return crypto.subtle.exportKey('jwk', key);
-    } catch (e) {
-        console.log('error occured in retrieveJWK(): ', e)
         throw new Error(e)
     }
 }
@@ -126,5 +99,18 @@ function str2ab(str) {
         bufView[i] = str.charCodeAt(i);
     }
     return buf;
+}
+
+function decodeJwt(token) {
+  const parts = token.split('.');
+  const header = JSON.parse(atob(parts[0]));
+  const payload = JSON.parse(atob(parts[1]));
+  const signature = atob(parts[2].replace(/_/g, '/').replace(/-/g, '+'));
+  return {
+    header: header,
+    payload: payload,
+    signature: signature,
+    raw: { header: parts[0], payload: parts[1], signature: parts[2] }
+  }
 }
 
