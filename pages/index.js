@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import { UserButton } from "@clerk/nextjs";
 
 export default function Home() {
@@ -11,10 +12,14 @@ export default function Home() {
             <boby>
                 <div style={{display: 'flex',  justifyContent:'space-around', alignItems:'center', height: '100vh'}}>
                     <p>
-                        <a href={'/regular'}>Try regular endpoint</a>
+                        <Link href="/regular">
+                            <a>Try regular endpoint</a>
+                        </Link>
                     </p>
                     <p>
-                        <a href={'/edge'}>Try edge endpoint</a>
+                        <Link href="/edge">
+                            <a>Try edge endpoint</a>
+                        </Link>
                     </p>
                 </div>
             </boby>
