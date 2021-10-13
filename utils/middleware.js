@@ -103,7 +103,7 @@ async function retrieveJWK() {
 
         // convert from a binary string to an ArrayBuffer
         const binaryDer = str2ab(binaryDerString);
-        console.log('binaryDer (ArrayBuffer): ' binaryDer)
+        console.log('binaryDer (ArrayBuffer): ', binaryDer);
 
         const key = await crypto.subtle.importKey(
             'spki',
