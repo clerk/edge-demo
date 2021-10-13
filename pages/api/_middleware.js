@@ -1,18 +1,9 @@
-// import requireSession from '../../utils/middleware';
-//
-// export default requireSession((req, res, next) => {
-//     if(req.path === '/api/edge') {
-//         res.send(req.session.userId);
-//         return
-//     }
-//     next();
-// })
+import requireSession from '../../utils/middleware';
 
-export default (req, res, next) => {
-    res.setHeader('x-edge', '1')
+export default requireSession((req, res, next) => {
     // if(req.path === '/api/edge') {
-    //     res.send(req.session.userId);
-    //     return
+        res.send(req.session.userId);
+        // return
     // }
-    next();
-}
+    // next();
+})
