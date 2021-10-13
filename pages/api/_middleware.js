@@ -1,4 +1,4 @@
-import requireSession from '../utils/middleware';
+import requireSession from '../../utils/middleware';
 
 export default requireSession((req, res, next) => {
     if(req.path === '/api/edge') {
