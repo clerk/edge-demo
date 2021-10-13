@@ -81,7 +81,7 @@ async function verifyToken(token) {
       const signature = new Uint8Array(Array.from(decodedToken.signature).map(c => c.charCodeAt(0)));
       const verified = crypto.subtle.verify('RSASSA-PKCS1-v1_5', key, signature, data)
 
-      if verified {
+      if (verified) {
         return JSON.parse(atob(data));
       } else {
         return;
