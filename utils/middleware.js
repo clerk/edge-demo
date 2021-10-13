@@ -58,7 +58,6 @@ async function verifyToken(token) {
             e: "AQAB"
         })
         console.log('after jose import jwk', pubKey)
-
         console.log(token)
 
         // const ok = await crypto.subtle.verify('RSASSA-PKCS1-v1_5', process.env.CLERK_PUBLIC_KEY, token.split('.')[2], token.split('.')[1])
