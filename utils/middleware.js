@@ -52,32 +52,25 @@ async function verifyToken(token) {
     console.log('token being verified: ', token)
 
     try {
-        const signAlgorithm = {
-            name: "RSASSA-PKCS1-v1_5",
-            hash: {
-                name: "SHA-256"
+        const key = await parseJwk(
+            {
+                use: "sig",
+                kty: "RSA",
+                kid: "ins_1yiuq1D9zppc0osRtGth9mOtqur",
+                alg: "RS256",
+                n: "8VSJjOvDOndfVcTnxX5FRjVXo2SrhWkaa10EaC5o9yqGFE-lFSNJD6eZd5fgdPlMu9RgeGoiKma9xd5-9XyL-Nq7qhxQw-jXxoUlwLOXbXuvJ0MRF7hdPJvqhCSyBpgbi0-Br8HAyeJ8lsqPxp4-WxiXuguHjgz35OkyONPKg1rOFlGYq1EaJU4mUXncSj9AyjZP2-pQkn4LSJIFo4vuLzK59UobLr2P6-I9z_ib_mFUqwMVZbQWa_PqorGPvhYuJJKXE2KASamJ6224F-S3C8rWAEk4ylUXyh1CjhVzsbw4lb155goJ-4DR4Hj3pRtSiuGTXfsa_f__7bsiyBIR4w",
+                e: "AQAB"
             },
-            modulusLength: 2048,
-            extractable: false,
-            publicExponent: new Uint8Array([1, 0, 1])
-        }
+            "RS256"
+        );
 
-        const foo =  `-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAt3cmtkqQSWgUGiTz2j85
-WDHpozSHs9wAUEgzTnBQTEq7LBPQ/zSn4tHxI+7IO7J/EdjLI77dwh55DllEchY7
-boXR+nuuu56itC+pJq9GMrPrnFo/33cl0eJrEBXq1OBw65H0/GP4boHelKt1gJF9
-+kEiGE/En1CqYkso3+ARJZoRZwSty3pCe41iUJxzTaPnMbsUbGRQFDjAzfx3CpsP
-UloJr7+iscgkwZvkchc7b3DNyflOtVms20fNLN9COv0D4U7eu7ylmLKK5FZ5j05s
-ySA9Ztsj3Vk5gKrKud1ESJ7dMYrOuKr5JPI/lhfO/NhajOUwXAex4YM6crJpyLNG
-7QIDAQAB
------END PUBLIC KEY-----`
+        console.log('crypto.subtle.importKey(): ', key)
 
-        // construct the public crypto key
-        const pubKey = await crypto.subtle.importKey('spki', convertPemToBinary(foo), signAlgorithm, true, ['verify']);
-        console.log('crypto.subtle.importKey(): ', pubKey)
+        // This hack should make jwtVerify work
+        globalThis.CryptoKey = key.constructor;
 
         // verify the token
-        const { payload } = await jwtVerify(token, pubKey, {algorithms: ['RS256']})
+        const { payload } = await jwtVerify(token, key, {algorithms: ['RS256']})
         console.log('jose.jwtVerify(): ', payload)
 
         if (!payload.iss || !(payload.iss?.lastIndexOf('https://clerk.', 0) === 0)) {
