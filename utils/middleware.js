@@ -2,25 +2,21 @@ export default function requireSession(handler) {
     return async function(req, res, next) {
         try {
             const cookieToken = req.cookies['__session'];
-            console.log(`cookieToken: ${cookieToken}`);
 
             let headerToken;
             if (req.headers) {
                 headerToken = (req.headers['Authorization'] || req.headers['authorization'])
-                console.log(`headerToken: ${headerToken}`);
             }
 
             let sessionClaims;
 
             if (headerToken) {
                 sessionClaims = await verifyToken(headerToken);
-                console.log('1', sessionClaims)
             }
 
             // Try to verify token from cookie only if header is empty or failed to verify
             if (!sessionClaims && cookieToken) {
                 sessionClaims = await verifyToken(cookieToken);
-                console.log('2', sessionClaims)
             }
 
             if (!sessionClaims) {
