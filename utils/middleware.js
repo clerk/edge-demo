@@ -48,11 +48,11 @@ async function verifyToken(token) {
     }
     console.log('3')
     const jwk = await retrieveJWK()
-    console.log('4')
+    console.log('after retrieve jwk')
     const pubKey = importJWK(jwk)
+    console.log('after jose import jwk')
 
     console.log(token)
-
 
     // const ok = await crypto.subtle.verify('RSASSA-PKCS1-v1_5', process.env.CLERK_PUBLIC_KEY, token.split('.')[2], token.split('.')[1])
     // console.log(ok)
@@ -61,6 +61,8 @@ async function verifyToken(token) {
     // }
 
     const { payload } = await jwtVerify(token, pubKey, {algorithms: ['RS256']})
+
+    console.log('after verify')
 
     if (!payload.iss || !(payload.iss?.lastIndexOf('https://clerk.', 0) === 0)) {
         throw new Error(`Invalid issuer: ${payload.iss}`)
@@ -84,8 +86,11 @@ async function retrieveJWK() {
     console.log(pemContents)
     // base64 decode the string to get the binary data
     const binaryDerString = atob(pemContents);
+    console.log('after atob')
     // convert from a binary string to an ArrayBuffer
     const binaryDer = str2ab(binaryDerString);
+
+    console.log('before crypto import key')
 
     const key = await crypto.subtle.importKey(
         'spki',
@@ -97,6 +102,8 @@ async function retrieveJWK() {
         true,
         ['verify']
     );
+
+    console.log('after crypto import key')
 
     return crypto.subtle.exportKey('jwk', key);
 }
