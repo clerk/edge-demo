@@ -101,8 +101,18 @@ async function verifyToken(token) {
             publicExponent: new Uint8Array([1, 0, 1])
         }
 
+        const foo =  `-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAt3cmtkqQSWgUGiTz2j85
+WDHpozSHs9wAUEgzTnBQTEq7LBPQ/zSn4tHxI+7IO7J/EdjLI77dwh55DllEchY7
+boXR+nuuu56itC+pJq9GMrPrnFo/33cl0eJrEBXq1OBw65H0/GP4boHelKt1gJF9
++kEiGE/En1CqYkso3+ARJZoRZwSty3pCe41iUJxzTaPnMbsUbGRQFDjAzfx3CpsP
+UloJr7+iscgkwZvkchc7b3DNyflOtVms20fNLN9COv0D4U7eu7ylmLKK5FZ5j05s
+ySA9Ztsj3Vk5gKrKud1ESJ7dMYrOuKr5JPI/lhfO/NhajOUwXAex4YM6crJpyLNG
+7QIDAQAB
+-----END PUBLIC KEY-----`
+
         // const pubKey = await crypto.subtle.importKey('spki', jwk, { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, true, ['verify']);
-        const pubKey = await crypto.subtle.importKey('spki', convertPemToBinary(process.env.CLERK_PUBLIC_KEY.replace(/\\n/g, '\n')), signAlgorithm, true, ['verify']);
+        const pubKey = await crypto.subtle.importKey('spki', convertPemToBinary(foo), signAlgorithm, true, ['verify']);
 
         // console.log('after jose import jwk', pubKey)
 
