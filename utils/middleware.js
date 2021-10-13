@@ -70,27 +70,18 @@ async function verifyToken(token) {
 }
 
 async function retrieveJWK() {
-    const pubKey = process.env.CLERK_PUBLIC_KEY
+    const pubKey = process.env.CLERK_PUBLIC_KEY.replace(/\\n/g, '\n');
     if (!pubKey) {
         throw new Error('Missing public key')
     }
 
     console.log(pubKey)
-//
-//     const pubKey = `-----BEGIN PUBLIC KEY-----
-// MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAz5S+3ZYZ034ZaCCXq8Xw
-// xLHlcABKYBjfWG8QXWb0mHhMfZsG+MEQds7nv96fdzEqJxJabitf6dFfJ99DLpLc
-// L6ITGDLxVg0f9SY8LxPFdeS491AWgMNVWPOWvPDpLmY2HZGq0rHupHUBxabEMZi0
-// 2z7KUQBG3pfnL7pzR5/aabCltXWnnzGzPN7SCbe90u5t2DcmVVEbU5x9Yzx3RbgX
-// x9d+cqOpbY/Nz6qXbtT3OZAj293lRagz4XBUsUnG9QbwEa6DV7AakJoP55NGJwTO
-// 3i/9PTpTnKWUV0VvQVZVDOPu9SD6vIocHRUiU+pE8yp/P9ozE9gnpssoaoweQJs3
-// 3wIDAQAB
-// -----END PUBLIC KEY-----`;
 
     // fetch the part of the PEM string between header and footer
     const pemHeader = "-----BEGIN PUBLIC KEY-----";
     const pemFooter = "-----END PUBLIC KEY-----";
     const pemContents = pubKey.substring(pemHeader.length, pubKey.length - pemFooter.length);
+    console.log(pemContents)
     // base64 decode the string to get the binary data
     const binaryDerString = atob(pemContents);
     // convert from a binary string to an ArrayBuffer
