@@ -91,8 +91,18 @@ async function verifyToken(token) {
         //     'RS256'
         // );
 
+        const signAlgorithm = {
+            name: "RSASSA-PKCS1-v1_5",
+            hash: {
+                name: "SHA-256"
+            },
+            modulusLength: 2048,
+            extractable: false,
+            publicExponent: new Uint8Array([1, 0, 1])
+        }
+
         // const pubKey = await crypto.subtle.importKey('spki', jwk, { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, true, ['verify']);
-        const pubKey = await crypto.subtle.importKey('spki', str2ab(process.env.CLERK_PUBLIC_KEY), { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, true, ['encrypt']);
+        const pubKey = await crypto.subtle.importKey('spki', convertPemToBinary(process.env.CLERK_PUBLIC_KEY), signAlgorithm, true, ['verify']);
 
         // console.log('after jose import jwk', pubKey)
 
@@ -119,6 +129,30 @@ async function verifyToken(token) {
         console.log('verify token error', e)
         throw new Error(e)
     }
+}
+
+function convertPemToBinary(pem) {
+    let lines = pem.split('\n')
+    let encoded = ''
+    for(let i = 0;i < lines.length;i++){
+        if (lines[i].trim().length > 0 &&
+            lines[i].indexOf('-BEGIN RSA PRIVATE KEY-') < 0 &&
+            lines[i].indexOf('-BEGIN RSA PUBLIC KEY-') < 0 &&
+            lines[i].indexOf('-END RSA PRIVATE KEY-') < 0 &&
+            lines[i].indexOf('-END RSA PUBLIC KEY-') < 0) {
+            encoded += lines[i].trim()
+        }
+    }
+    return base64StringToArrayBuffer(encoded)
+}
+
+function base64StringToArrayBuffer(b64str) {
+    const byteStr = atob(b64str)
+    const bytes = new Uint8Array(byteStr.length)
+    for (let i = 0; i < byteStr.length; i++) {
+        bytes[i] = byteStr.charCodeAt(i)
+    }
+    return bytes.buffer
 }
 
 async function retrieveJWK() {
