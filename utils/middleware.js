@@ -51,9 +51,7 @@ async function verifyToken(token) {
 
         const pubKey = await retrieveJWK();
         console.log('retrieveJWK(): ', pubKey)
-
-//        const pubKey = importJWK(jwk)
-//        console.log('jose.importJWK(): ', JSON.stringify(pubKey))
+        console.log('CryptoKey.algorithm.publicExponent.toString(): ', pubKey.algorithm.publicExponent.buffer)
 
         const {payload} = await jwtVerify(token, pubKey, {algorithms: ['RS256']})
         console.log('after verify', payload)
