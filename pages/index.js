@@ -1,45 +1,23 @@
-import React, {useState} from 'react';
+import React from 'react';
+import { UserButton } from "@clerk/nextjs";
 
 export default function Home() {
-    const [statusCode, setStatusCode] = useState(0)
-    const [data, setData] = useState('')
-
-    const APIEndpoint = '/api/hello'
-
-    React.useEffect( async () => {
-        const retrieveData = async () => {
-            const response = await fetch(APIEndpoint, {
-                method: 'GET',
-            })
-
-            setStatusCode(response.status)
-
-            if (response.status === 200) {
-                const data = await response.json()
-                setData(JSON.stringify(data, null, 2))
-            } else {
-                const data = await response.text()
-                setData(data)
-            }
-        }
-
-        await retrieveData()
-    }, [])
-
     return (
         <>
-            <div style={{padding: '15px', margin: '15px'}}>
-                <h1>Welcome to Clerk PoC serverless</h1>
-                <div>
-                    status code: &nbsp;<span style={{fontWeight: 'bold', color: statusCode === 200 ? 'green' : 'red'}}> {statusCode} </span>
+            <header>
+                <UserButton/>
+            </header>
 
-                    <br /><br />
-
-                    claims from the verified token:
-                    <br />
-                    <pre>{data}</pre>
+            <boby>
+                <div style={{display: 'flex',  justifyContent:'space-around', alignItems:'center', height: '100vh'}}>
+                    <p>
+                        <a href={'/regular'}>Try regular endpoint</a>
+                    </p>
+                    <p>
+                        <a href={'/edge'}>Try edge endpoint</a>
+                    </p>
                 </div>
-            </div>
+            </boby>
         </>
-    );
+    )
 }
