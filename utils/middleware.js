@@ -45,52 +45,13 @@ export default function requireSession(handler) {
 
 async function verifyToken(token) {
     if (!token) {
+        console.log('empty token received! halting...');
         return;
     }
 
-    console.log(token)
+    console.log('token being verified: ', token)
 
     try {
-        // const jwk = await retrieveJWK()
-        // console.log('after retrieve jwk', jwk)
-
-        // const tokenSplitted = token.split('.')
-
-        // const encoder = new TextEncoder();
-        // const data = encoder.encode([tokenSplited[0], tokenSplited[1]].join('.'));
-        // const signature = new Uint8Array(Array.from(tokenSplited[2]).map(c => c.charCodeAt(0)));
-
-        // const jwk = {
-        //     alg: 'RS256',
-        //     kty: 'RSA',
-        //     key_ops: ['verify'],
-        //     use: 'sig',
-        //     e: 'AQAB',
-        //     n: "t3cmtkqQSWgUGiTz2j85WDHpozSHs9wAUEgzTnBQTEq7LBPQ_zSn4tHxI-7IO7J_EdjLI77dwh55DllEchY7boXR-nuuu56itC-pJq9GMrPrnFo_33cl0eJrEBXq1OBw65H0_GP4boHelKt1gJF9-kEiGE_En1CqYkso3-ARJZoRZwSty3pCe41iUJxzTaPnMbsUbGRQFDjAzfx3CpsPUloJr7-iscgkwZvkchc7b3DNyflOtVms20fNLN9COv0D4U7eu7ylmLKK5FZ5j05sySA9Ztsj3Vk5gKrKud1ESJ7dMYrOuKr5JPI_lhfO_NhajOUwXAex4YM6crJpyLNG7Q",
-        // }
-
-       // const pubKey = await importJWK({
-       //      alg: 'RS256',
-       //      kty: 'RSA',
-       //      key_ops: ['verify'],
-       //      use: 'sig',
-       //      kid: 'ins_1zRcrQ8D4VOJvd9cxqoTW2iCTis',
-       //      e: 'AQAB',
-       //      n: "t3cmtkqQSWgUGiTz2j85WDHpozSHs9wAUEgzTnBQTEq7LBPQ_zSn4tHxI-7IO7J_EdjLI77dwh55DllEchY7boXR-nuuu56itC-pJq9GMrPrnFo_33cl0eJrEBXq1OBw65H0_GP4boHelKt1gJF9-kEiGE_En1CqYkso3-ARJZoRZwSty3pCe41iUJxzTaPnMbsUbGRQFDjAzfx3CpsPUloJr7-iscgkwZvkchc7b3DNyflOtVms20fNLN9COv0D4U7eu7ylmLKK5FZ5j05sySA9Ztsj3Vk5gKrKud1ESJ7dMYrOuKr5JPI_lhfO_NhajOUwXAex4YM6crJpyLNG7Q",
-       //  })
-
-        // const pubKey = await parseJwk(
-        //     {
-        //         alg: 'RS256',
-        //         kty: 'RSA',
-        //         key_ops: ['verify'],
-        //         use: 'sig',
-        //         e: 'AQAB',
-        //         n: '8VSJjOvDOndfVcTnxX5FRjVXo2SrhWkaa10EaC5o9yqGFE-lFSNJD6eZd5fgdPlMu9RgeGoiKma9xd5-9XyL-Nq7qhxQw-jXxoUlwLOXbXuvJ0MRF7hdPJvqhCSyBpgbi0-Br8HAyeJ8lsqPxp4-WxiXuguHjgz35OkyONPKg1rOFlGYq1EaJU4mUXncSj9AyjZP2-pQkn4LSJIFo4vuLzK59UobLr2P6-I9z_ib_mFUqwMVZbQWa_PqorGPvhYuJJKXE2KASamJ6224F-S3C8rWAEk4ylUXyh1CjhVzsbw4lb155goJ-4DR4Hj3pRtSiuGTXfsa_f__7bsiyBIR4w'
-        //     },
-        //     'RS256'
-        // );
-
         const signAlgorithm = {
             name: "RSASSA-PKCS1-v1_5",
             hash: {
@@ -111,24 +72,13 @@ ySA9Ztsj3Vk5gKrKud1ESJ7dMYrOuKr5JPI/lhfO/NhajOUwXAex4YM6crJpyLNG
 7QIDAQAB
 -----END PUBLIC KEY-----`
 
-        // const pubKey = await crypto.subtle.importKey('spki', jwk, { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, true, ['verify']);
+        // construct the public crypto key
         const pubKey = await crypto.subtle.importKey('spki', convertPemToBinary(foo), signAlgorithm, true, ['verify']);
+        console.log('crypto.subtle.importKey(): ', pubKey)
 
-        // console.log('after jose import jwk', pubKey)
-
-        // This hack should make jwtVerify work
-        // globalThis.CryptoKey = pubKey.constructor;
-
-        // const ok = await crypto.subtle.verify('RSASSA-PKCS1-v1_5', pubKey, signature, data)
-        // // const ok = await crypto.subtle.verify('RSASSA-PKCS1-v1_5', pubKey, token.split('.')[2], token.split('.')[1])
-        // console.log(ok)
-        // if (!ok) {
-        //     throw new Error('Not ok')
-        // }
-
+        // verify the token
         const { payload } = await jwtVerify(token, pubKey, {algorithms: ['RS256']})
-
-        console.log('after verify', payload)
+        console.log('jose.jwtVerify(): ', payload)
 
         if (!payload.iss || !(payload.iss?.lastIndexOf('https://clerk.', 0) === 0)) {
             throw new Error(`Invalid issuer: ${payload.iss}`)
