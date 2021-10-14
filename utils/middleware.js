@@ -8,6 +8,10 @@ export default function requireSession(handler) {
                 headerToken = (req.headers['Authorization'] || req.headers['authorization'])
             }
 
+            if (!cookieToken && !headerToken) {
+                return res.status(401).send('Missing session token')
+            }
+
             let sessionClaims;
 
             if (headerToken) {
@@ -20,72 +24,91 @@ export default function requireSession(handler) {
             }
 
             if (!sessionClaims) {
-                throw new Error('Missing session token or token invalid')
+               return res.status(401).send('Invalid token')
             }
 
             // @ts-ignore
             req.session = {id: sessionClaims.sid, userId: sessionClaims.sub};
 
             handler(req, res, next)
-        } catch (error) {
-            console.log('Error: ', error)
-            res.status(401).send(error)
+        } catch (e) {
+            console.log(e)
+            res.status(401).send(e.toString())
         }
     }
 }
 
 async function verifyToken(token) {
-    if (!token) {
-        return;
-    }
     try {
-      // load the public key from env
-      const pubKey = process.env.CLERK_PUBLIC_KEY;
-      if (!pubKey) {
-          throw new Error('Missing public key')
-      }
+      const key = await loadPublicKey();
 
-      // parse the public key to a CryptoKey:
-      // taken from https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/importKey#subjectpublickeyinfo_import
-
-      // base64 decode the string to get the binary data
-      const binaryDerString = atob(pubKey);
-
-      // convert from a binary string to an ArrayBuffer
-      const binaryDer = str2ab(binaryDerString);
-
-      // construct the CryptoKey
-      const key = await crypto.subtle.importKey(
-          'spki',
-          binaryDer,
-          {
-              name: 'RSASSA-PKCS1-v1_5',
-              hash: 'SHA-256'
-          },
-          true,
-          ['verify']
-      );
-
-      // decode+verify token
-      const decodedToken = decodeJwt(token);
-
-      // verify exp+nbf
-      if (isExpired(decodedToken)) {
-        return false;
-      }
-
-      // verify signature
-      const encoder = new TextEncoder();
-      const data = encoder.encode([decodedToken.raw.header, decodedToken.raw.payload].join('.'));
-      const signature = new Uint8Array(Array.from(decodedToken.signature).map(c => c.charCodeAt(0)));
-      const verified = await crypto.subtle.verify('RSASSA-PKCS1-v1_5', key, signature, data)
-      if (verified) {
-        return JSON.parse(atob(decodedToken.raw.payload));
-      }
+      return await verifyJwt(key, token);
     } catch (e) {
-        console.log('verify token error: ', e)
-        throw new Error(e)
+        throw e
     }
+}
+
+async function loadPublicKey() {
+    // load the public key from env
+    const pubKey = process.env.CLERK_PUBLIC_KEY;
+    if (!pubKey) {
+        throw new Error('Missing public key')
+    }
+
+    // parse the public key to a CryptoKey:
+    // taken from https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/importKey#subjectpublickeyinfo_import
+
+    // base64 decode the string to get the binary data
+    const binaryDerString = atob(pubKey);
+
+    // convert from a binary string to an ArrayBuffer
+    const binaryDer = str2ab(binaryDerString);
+
+    // construct the CryptoKey
+    return await crypto.subtle.importKey(
+        'spki',
+        binaryDer,
+        {
+            name: 'RSASSA-PKCS1-v1_5',
+            hash: 'SHA-256'
+        },
+        true,
+        ['verify']
+    );
+}
+
+function decodeJwt(token) {
+    const parts = token.split('.');
+    const header = JSON.parse(atob(parts[0]));
+    const payload = JSON.parse(atob(parts[1]));
+    const signature = atob(parts[2].replace(/_/g, '/').replace(/-/g, '+'));
+    return {
+        header: header,
+        payload: payload,
+        signature: signature,
+        raw: { header: parts[0], payload: parts[1], signature: parts[2] }
+    }
+}
+
+async function verifyJwt(key, token) {
+    const decodedToken = decodeJwt(token);
+
+    // verify exp+nbf claims
+    if (isExpired(decodedToken)) {
+        return false;
+    }
+
+    // verify signature
+    const encoder = new TextEncoder();
+    const data = encoder.encode([decodedToken.raw.header, decodedToken.raw.payload].join('.'));
+    const signature = new Uint8Array(Array.from(decodedToken.signature).map(c => c.charCodeAt(0)));
+
+    const isVerified = crypto.subtle.verify('RSASSA-PKCS1-v1_5', key, signature, data);
+    if (!isVerified) {
+        throw new Error('Failed to verify token')
+    }
+
+    return JSON.parse(atob(decodedToken.raw.payload));
 }
 
 // Convert a string into an ArrayBuffer from https://developers.google.com/web/updates/2012/06/How-to-convert-ArrayBuffer-to-and-from-String
@@ -98,19 +121,6 @@ function str2ab(str) {
     return buf;
 }
 
-function decodeJwt(token) {
-  const parts = token.split('.');
-  const header = JSON.parse(atob(parts[0]));
-  const payload = JSON.parse(atob(parts[1]));
-  const signature = atob(parts[2].replace(/_/g, '/').replace(/-/g, '+'));
-  return {
-    header: header,
-    payload: payload,
-    signature: signature,
-    raw: { header: parts[0], payload: parts[1], signature: parts[2] }
-  }
-}
-
 function isExpired(decodedToken) {
   const claims = decodedToken.payload
   const now = Date.now().valueOf() / 1000
@@ -119,9 +129,5 @@ function isExpired(decodedToken) {
     return true;
   }
 
-  if (typeof claims.nbf !== 'undefined' && claims.nbf > now) {
-    return true;
-  }
-
-  return false;
+  return typeof claims.nbf !== 'undefined' && claims.nbf > now;
 }
