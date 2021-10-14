@@ -40,19 +40,16 @@ async function verifyToken(token) {
     }
     try {
       // load the public key from env
-      const pubKey = process.env.CLERK_PUBLIC_KEY.replace(/\\n/g, '\n');
+      const pubKey = process.env.CLERK_PUBLIC_KEY;
       if (!pubKey) {
           throw new Error('Missing public key')
       }
 
       // parse the public key to a CryptoKey:
-      // fetch the part of the PEM string between header and footer
       // taken from https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/importKey#subjectpublickeyinfo_import
-      const pemHeader = "-----BEGIN PUBLIC KEY-----"; const pemFooter = "-----END PUBLIC KEY-----";
-      const pemContents = pubKey.substring(pemHeader.length, pubKey.length - pemFooter.length);
 
       // base64 decode the string to get the binary data
-      const binaryDerString = atob(pemContents);
+      const binaryDerString = atob(pubKey);
 
       // convert from a binary string to an ArrayBuffer
       const binaryDer = str2ab(binaryDerString);
