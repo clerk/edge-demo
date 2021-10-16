@@ -11,6 +11,7 @@
   "dependencies": {
     "@clerk/clerk-sdk-node": "^0.6.1",
     "@clerk/nextjs": "^1.5.0",
+    "@peculiar/webcrypto": "^1.1.7",
     "jose": "^3.20.1",
     "next": "https://next-middleware-build.vercel.sh/latest",
     "react": "17.0.2",

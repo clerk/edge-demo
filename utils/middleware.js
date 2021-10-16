@@ -1,15 +1,20 @@
+import { Crypto } from "@peculiar/webcrypto";
+crypto = new Crypto();
+
 export default function requireSession(handler) {
-    return async function(req, res, next) {
+    return async function (req, res, next) {
         try {
-            const cookieToken = req.cookies['__session'];
+            const cookieToken = req.cookies["__session"];
 
             let headerToken;
             if (req.headers) {
-                headerToken = (req.headers['Authorization'] || req.headers['authorization'])
+                headerToken =
+                    req.headers["Authorization"] ||
+                    req.headers["authorization"];
             }
 
             if (!cookieToken && !headerToken) {
-                return res.status(401).send('Missing session token')
+                return res.status(401).send("Missing session token");
             }
 
             let sessionClaims;
@@ -24,27 +29,27 @@ export default function requireSession(handler) {
             }
 
             if (!sessionClaims) {
-               return res.status(401).send('Invalid token')
+                return res.status(401).send("Invalid token");
             }
 
             // @ts-ignore
-            req.session = {id: sessionClaims.sid, userId: sessionClaims.sub};
+            req.session = { id: sessionClaims.sid, userId: sessionClaims.sub };
 
-            handler(req, res, next)
+            handler(req, res, next);
         } catch (e) {
-            console.log(e)
-            res.status(401).send(e.toString())
+            console.log(e);
+            res.status(401).send(e.toString());
         }
-    }
+    };
 }
 
 async function verifyToken(token) {
     try {
-      const key = await loadPublicKey();
+        const key = await loadPublicKey();
 
-      return await verifyJwt(key, token);
+        return await verifyJwt(key, token);
     } catch (e) {
-        throw e
+        throw e;
     }
 }
 
@@ -52,7 +57,7 @@ async function loadPublicKey() {
     // load the public key from env
     const pubKey = process.env.CLERK_PUBLIC_KEY;
     if (!pubKey) {
-        throw new Error('Missing public key')
+        throw new Error("Missing public key");
     }
 
     // parse the public key to a CryptoKey:
@@ -66,28 +71,28 @@ async function loadPublicKey() {
 
     // construct the CryptoKey
     return await crypto.subtle.importKey(
-        'spki',
+        "spki",
         binaryDer,
         {
-            name: 'RSASSA-PKCS1-v1_5',
-            hash: 'SHA-256'
+            name: "RSASSA-PKCS1-v1_5",
+            hash: "SHA-256",
         },
         true,
-        ['verify']
+        ["verify"]
     );
 }
 
 function decodeJwt(token) {
-    const parts = token.split('.');
+    const parts = token.split(".");
     const header = JSON.parse(atob(parts[0]));
     const payload = JSON.parse(atob(parts[1]));
-    const signature = atob(parts[2].replace(/_/g, '/').replace(/-/g, '+'));
+    const signature = atob(parts[2].replace(/_/g, "/").replace(/-/g, "+"));
     return {
         header: header,
         payload: payload,
         signature: signature,
-        raw: { header: parts[0], payload: parts[1], signature: parts[2] }
-    }
+        raw: { header: parts[0], payload: parts[1], signature: parts[2] },
+    };
 }
 
 async function verifyJwt(key, token) {
@@ -100,12 +105,21 @@ async function verifyJwt(key, token) {
 
     // verify signature
     const encoder = new TextEncoder();
-    const data = encoder.encode([decodedToken.raw.header, decodedToken.raw.payload].join('.'));
-    const signature = new Uint8Array(Array.from(decodedToken.signature).map(c => c.charCodeAt(0)));
+    const data = encoder.encode(
+        [decodedToken.raw.header, decodedToken.raw.payload].join(".")
+    );
+    const signature = new Uint8Array(
+        Array.from(decodedToken.signature).map((c) => c.charCodeAt(0))
+    );
 
-    const isVerified = crypto.subtle.verify('RSASSA-PKCS1-v1_5', key, signature, data);
+    const isVerified = crypto.subtle.verify(
+        "RSASSA-PKCS1-v1_5",
+        key,
+        signature,
+        data
+    );
     if (!isVerified) {
-        throw new Error('Failed to verify token')
+        throw new Error("Failed to verify token");
     }
 
     return JSON.parse(atob(decodedToken.raw.payload));
@@ -122,12 +136,12 @@ function str2ab(str) {
 }
 
 function isExpired(decodedToken) {
-  const claims = decodedToken.payload
-  const now = Date.now().valueOf() / 1000
+    const claims = decodedToken.payload;
+    const now = Date.now().valueOf() / 1000;
 
-  if (typeof claims.exp !== 'undefined' && claims.exp < now) {
-    return true;
-  }
+    if (typeof claims.exp !== "undefined" && claims.exp < now) {
+        return true;
+    }
 
-  return typeof claims.nbf !== 'undefined' && claims.nbf > now;
+    return typeof claims.nbf !== "undefined" && claims.nbf > now;
 }
