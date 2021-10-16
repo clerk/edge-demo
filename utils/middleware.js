@@ -1,5 +1,4 @@
-import { Crypto } from "@peculiar/webcrypto";
-crypto = new Crypto();
+// console.log("CRYPTO:", crypto);
 
 export default function requireSession(handler) {
     return async function (req, res, next) {
@@ -63,16 +62,32 @@ async function loadPublicKey() {
     // parse the public key to a CryptoKey:
     // taken from https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/importKey#subjectpublickeyinfo_import
 
-    // base64 decode the string to get the binary data
-    const binaryDerString = atob(pubKey);
+    // // base64 decode the string to get the binary data
+    // const binaryDerString = atob(pubKey);
 
-    // convert from a binary string to an ArrayBuffer
-    const binaryDer = str2ab(binaryDerString);
+    // // convert from a binary string to an ArrayBuffer
+    // const binaryDer = str2ab(binaryDerString);
+
+    // Next.js in development mode currently cannot parse PEM, but it can
+    // parse JWKs. This is a simple way to convert our PEM keys to JWKs
+    // until the bug is resolved.
+
+    const rsaPrefix = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA";
+    const rsaSuffix = "IDAQAB";
+
+    const jwk = {
+        kty: "RSA",
+        n: pubKey
+            .slice(rsaPrefix.length, rsaSuffix.length * -1)
+            .replace(/\+/g, "-")
+            .replace(/\//g, "_"),
+        e: "AQAB",
+    };
 
     // construct the CryptoKey
     return await crypto.subtle.importKey(
-        "spki",
-        binaryDer,
+        "jwk",
+        jwk,
         {
             name: "RSASSA-PKCS1-v1_5",
             hash: "SHA-256",
