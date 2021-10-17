@@ -1,5 +1,6 @@
 import React from "react";
 import { ClerkLoaded } from "@clerk/clerk-react";
+import { getVercelRegion } from "../utils/vercelRegion";
 
 import {
   GlobeAltIcon,
@@ -110,6 +111,7 @@ const Requester = ({
       const data = await response.json();
       setResult({
         responseTime: responseTime,
+        responseRegion: getVercelRegion(response.headers.get("x-vercel-id")),
         ...data,
       });
     }
