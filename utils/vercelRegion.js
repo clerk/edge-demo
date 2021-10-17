@@ -20,13 +20,7 @@ const vercelRegions = {
 
 // Warning: This will mistakenly return "Development"
 // if not deploying on Vercel
-export const getVercelRegion = (res) => {
-  console.log("a", res.headers);
-
-  const header = res.headers.get("x-vercel-id");
-
-  console.log("1", res.headers.get("x-vercel-id"));
-
+export const getVercelRegion = (header) => {
   if (!header || header === "") {
     return "Development";
   }

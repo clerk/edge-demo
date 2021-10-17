@@ -1,4 +1,5 @@
 import React from "react";
+import { ClerkLoaded } from "@clerk/clerk-react";
 
 import {
   GlobeAltIcon,
@@ -115,7 +116,7 @@ const Requester = ({
   };
 
   return (
-    <>
+    <ClerkLoaded>
       <h2
         className={`${labelColor} text-base font-semibold tracking-wider uppercase`}
       >
@@ -133,7 +134,7 @@ const Requester = ({
           <Result result={result} />
         </div>
       </div>
-    </>
+    </ClerkLoaded>
   );
 };
 
@@ -156,7 +157,7 @@ const Result = ({ result }) => {
         </dt>
         {result ? (
           <dd className="mt-1 text-2xl text-gray-900">
-            {result.authenticationTime} ms
+            {result.authenticationTime || "< 1"} ms
           </dd>
         ) : (
           <dd className="mt-1 text-2xl text-gray-900">-- ms</dd>

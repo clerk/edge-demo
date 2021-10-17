@@ -1,10 +1,5 @@
 import "tailwindcss/tailwind.css";
-import {
-  ClerkProvider,
-  SignedIn,
-  SignedOut,
-  RedirectToSignIn,
-} from "@clerk/nextjs";
+import { ClerkProvider, RedirectToSignIn } from "@clerk/nextjs";
 import { useRouter } from "next/router";
 
 function MyApp({ Component, pageProps }) {
