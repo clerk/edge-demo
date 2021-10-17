@@ -16,7 +16,7 @@ export default authTimer(
     res.status(200).json({
       ...req.session,
       authenticationTime: authTime,
-      responseRegion: getVercelRegion(req.headers["x-vercel-id"]),
+      responseRegion: getVercelRegion(res.headers["x-vercel-id"]),
     });
   })
 );
