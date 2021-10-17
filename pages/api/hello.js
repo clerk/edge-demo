@@ -12,7 +12,8 @@ const authTimer = (handler) => {
 export default authTimer(
   withSession((req, res) => {
     const authTime = new Date().getTime() - req.authStart;
-    console.log("Origin", req);
+    console.log("hmm", req.headers);
+    console.log("hmm", res.headers);
     res.status(200).json({
       ...req.session,
       authenticationTime: authTime,
