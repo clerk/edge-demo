@@ -1,5 +1,21 @@
-import requireSession from '../../../utils/middleware';
+import withSession from "../../../utils/middleware";
+import { getVercelRegion } from "../../../utils/vercelRegion";
 
-export default requireSession((req, res, next) => {
-        res.status(200).json(req.session);
-})
+const authTimer = (handler) => {
+  return (req, res, next) => {
+    req.authStart = new Date().getTime();
+    return handler(req, res, next);
+  };
+};
+
+export default authTimer(
+  withSession((req, res, next) => {
+    const authTime = new Date().getTime() - req.authStart;
+
+    res.status(200).json({
+      ...req.session,
+      authenticationTime: authTime,
+      responseRegion: getVercelRegion(res),
+    });
+  })
+);
