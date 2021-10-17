@@ -12,11 +12,12 @@ const authTimer = (handler) => {
 export default authTimer(
   withSession((req, res) => {
     const authTime = new Date().getTime() - req.authStart;
-
+    console.log("Origin", req);
     res.status(200).json({
       ...req.session,
       authenticationTime: authTime,
-      responseRegion: getVercelRegion(res.headers["x-vercel-id"]),
+      responseRegion: getVercelRegion(req.headers["x-vercel-id"]),
+      test2: req.headers,
     });
   })
 );
