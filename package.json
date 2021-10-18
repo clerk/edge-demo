@@ -15,7 +15,7 @@
     "@heroicons/react": "^1.0.4",
     "@peculiar/webcrypto": "^1.1.7",
     "jose": "^3.20.1",
-    "next": "https://next-middleware-build.vercel.sh/latest",
+    "next": "https://next-middleware-build.vercel.sh/next-v12.0.0-nightly.25.tgz",
     "react": "17.0.2",
     "react-dom": "17.0.2"
   },
