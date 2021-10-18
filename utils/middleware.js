@@ -53,10 +53,10 @@ async function verifyToken(token) {
 }
 
 async function loadPublicKey() {
-    // load the public key from env
-    const pubKey = process.env.CLERK_PUBLIC_KEY;
-    if (!pubKey) {
-        throw new Error("Missing public key");
+    // load the jwt key from env
+    const key = process.env.CLERK_JWT_KEY;
+    if (!key) {
+        throw new Error("Missing jwt key");
     }
 
     // parse the public key to a CryptoKey:
@@ -77,7 +77,7 @@ async function loadPublicKey() {
 
     const jwk = {
         kty: "RSA",
-        n: pubKey
+        n: key
             .slice(rsaPrefix.length, rsaSuffix.length * -1)
             .replace(/\+/g, "-")
             .replace(/\//g, "_"),
