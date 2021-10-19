@@ -2,6 +2,7 @@
 import { Fragment } from "react";
 import { Popover, Transition } from "@headlessui/react";
 import { MenuIcon, XIcon } from "@heroicons/react/outline";
+import { UserButton, SignedOut, SignedIn, useClerk } from "@clerk/clerk-react";
 
 const navigation = [
   { name: "Product", href: "#" },
@@ -120,14 +121,12 @@ export default function Example() {
                   ))}
                 </div>
                 <div className="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
-                  <span className="inline-flex rounded-md shadow">
-                    <a
-                      href="#"
-                      className="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md text-indigo-600 bg-white hover:text-indigo-500"
-                    >
-                      Log in
-                    </a>
-                  </span>
+                  <SignedIn>
+                    <UserButton />
+                  </SignedIn>
+                  <SignedOut>
+                    <SignInButton>Sign in</SignInButton>
+                  </SignedOut>
                 </div>
               </nav>
             </div>
@@ -172,12 +171,14 @@ export default function Example() {
                       </a>
                     ))}
                   </div>
-                  <a
-                    href="#"
-                    className="block w-full px-5 py-3 text-center font-medium text-indigo-600 bg-gray-50 hover:bg-gray-100 hover:text-indigo-700"
-                  >
-                    Log in
-                  </a>
+                  <div className="block w-full">
+                    <SignedIn>
+                      <UserButton afterSignOutUrl="/" />
+                    </SignedIn>
+                    <SignedOut>
+                      <SignInButton>Sign in</SignInButton>
+                    </SignedOut>
+                  </div>
                 </div>
               </Popover.Panel>
             </Transition>
@@ -202,3 +203,8 @@ export default function Example() {
     </div>
   );
 }
+
+const SignInButton = ({ children }) => {
+  const { redirectToSignIn } = useClerk();
+  return <button onClick={() => redirectToSignIn()}>{children}</button>;
+};

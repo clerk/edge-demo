@@ -1,18 +1,22 @@
-import withSession from "../../../utils/middleware";
+import { NextResponse } from "next/server";
+import { withSession } from "../../../utils/middleware";
 
 const authTimer = (handler) => {
-  return (req, res, next) => {
-    req.authStart = new Date().getTime();
-    return handler(req, res, next);
+  return (evt) => {
+    evt.request.authStart = new Date().getTime();
+    return handler(evt);
   };
 };
 
 export default authTimer(
-  withSession((req, res, next) => {
-    const authTime = new Date().getTime() - req.authStart;
-    res.status(200).json({
-      ...req.session,
-      authenticationTime: authTime,
-    });
+  withSession((evt) => {
+    const authTime = new Date().getTime() - evt.request.authStart;
+    return new Response(
+      JSON.stringify({
+        ...evt.request.session,
+        authenticationTime: authTime,
+      }),
+      { status: 200 }
+    );
   })
 );
