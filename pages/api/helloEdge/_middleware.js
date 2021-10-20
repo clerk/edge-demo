@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { withSession } from "../../../utils/middleware";
+import { withSession } from "@clerk/edge";
 
 const authTimer = (handler) => {
   return (evt) => {
