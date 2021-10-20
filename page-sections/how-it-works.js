@@ -153,7 +153,9 @@ const TokenRender = ({ token, index, time, total }) => {
           <dl className="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
             <div className="sm:col-span-1">
               <dt className="text-sm font-medium text-gray-500">Issued At</dt>
-              <dd className="mt-1 text-2xl text-gray-900">{claims.exp}</dd>
+              <dd className="mt-1 text-2xl text-gray-900">
+                {new Date(claims.exp * 1000).toLocaleString()}
+              </dd>
             </div>
             <div className="sm:col-span-1">
               <dt className="text-right text-sm font-medium text-gray-500">
