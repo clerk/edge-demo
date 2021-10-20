@@ -1,6 +1,8 @@
 import React from "react";
-import { ClerkLoaded } from "@clerk/clerk-react";
+import { SignedIn, SignedOut, useSession } from "@clerk/clerk-react";
 import { getVercelRegion } from "../utils/vercelRegion";
+
+import { Carousel } from "react-responsive-carousel";
 
 import {
   GlobeAltIcon,
@@ -47,8 +49,8 @@ export default function Example() {
           />
         </svg>
 
-        <div className="relative lg:grid lg:grid-cols-3 lg:gap-x-8">
-          <div className="lg:col-span-1">
+        <div className="relative lg:grid lg:grid-cols-6 lg:gap-x-8">
+          <div className="lg:col-span-2">
             <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
               Stateless done right
             </h2>
@@ -57,115 +59,181 @@ export default function Example() {
               <strong>revocable AND stateless</strong> authentication
             </p>
           </div>
-          <div className="lg:col-span-1"></div>
-          <div className="lg:col-span-1"></div>
+          <SignedIn>
+            <div className="lg:col-span-4">
+              <JWTDemo />
+            </div>
+          </SignedIn>
+          <SignedOut>
+            <div className="lg:col-span-1">Test</div>
+            <div className="lg:col-span-3">Signed out</div>
+          </SignedOut>
         </div>
       </div>
     </div>
   );
 }
 
-const Requester = ({
-  path,
-  label,
-  labelColor,
-  button,
-  buttonColor,
-  buttonBgColor,
-  buttonBgColorFocus,
-  buttonBgColorHover,
-  buttonShadow,
-}) => {
-  const [result, setResult] = React.useState(null);
-  const makeRequest = async () => {
-    const start = new Date().getTime();
-    const response = await fetch(path, {
-      method: "GET",
-    });
-    if (response.status === 200) {
-      const responseTime = new Date().getTime() - start;
-      const data = await response.json();
-      setResult({
-        responseTime: responseTime,
-        responseRegion: getVercelRegion(response.headers.get("x-vercel-id")),
-        ...data,
-      });
-    }
-  };
+function useInterval(callback, delay) {
+  const savedCallback = React.useRef(callback);
 
+  // Remember the latest callback if it changes.
+  React.useLayoutEffect(() => {
+    savedCallback.current = callback;
+  }, [callback]);
+
+  // Set up the interval.
+  React.useEffect(() => {
+    // Don't schedule if no delay is specified.
+    if (!delay) {
+      return;
+    }
+
+    const id = setInterval(() => savedCallback.current(), delay);
+
+    return () => clearInterval(id);
+  }, [delay]);
+}
+
+const TokenRender = ({ token, index, time, total }) => {
+  const claims = JSON.parse(atob(token.split(".")[1]));
+  const percentGone = Math.min(
+    1,
+    (time - claims.iat * 1000) / (claims.exp * 1000 - claims.iat * 1000)
+  );
+  const barColor =
+    percentGone < 0.5
+      ? "bg-green-500"
+      : percentGone < 0.6
+      ? "bg-yellow-300"
+      : percentGone < 0.7
+      ? "bg-yellow-400"
+      : percentGone < 0.8
+      ? "bg-yellow-500"
+      : percentGone < 0.9
+      ? "bg-yellow-600"
+      : "bg-red-600";
+  const textColor =
+    percentGone < 0.5
+      ? "text-green-500"
+      : percentGone < 0.6
+      ? "text-yellow-300"
+      : percentGone < 0.7
+      ? "text-yellow-400"
+      : percentGone < 0.8
+      ? "text-yellow-500"
+      : percentGone < 0.9
+      ? "text-yellow-600"
+      : "text-red-600";
   return (
-    <ClerkLoaded>
-      <h2
-        className={`${labelColor} text-base font-semibold tracking-wider uppercase`}
-      >
-        {label}
-      </h2>
-      <div className="mt-4 bg-white shadow sm:rounded-lg">
-        <button
-          onClick={makeRequest}
-          type="button"
-          className={`block w-full items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg rounded-b-none ${buttonShadow} ${buttonColor} ${buttonBgColor} hover:${buttonBgColorHover} focus:outline-none focus:ring-2 focus:${buttonBgColorFocus}`}
-        >
-          {button}
-        </button>
+    <div className="p-2 text-left">
+      <div className="shadow sm:rounded-lg">
+        <div className="bg-white px-4 py-5 border-b border-gray-200 sm:px-6">
+          <div className="-ml-4 -mt-2 flex items-center justify-between flex-wrap sm:flex-nowrap">
+            <div className="ml-4 mt-2">
+              <h3 className="text-lg leading-6 font-medium text-gray-900">
+                {" "}
+                {index === 0 && "Currently active JWT"}
+                {index === 1 && "Previous JWT"}
+                {index >= 2 && `${index} JWTs ago`}
+              </h3>
+            </div>
+            {total > 1 && (
+              <div className="ml-4 mt-2 flex-shrink-0">
+                #{total - index} of {total} generated so far
+              </div>
+            )}
+          </div>
+        </div>
+        <div
+          className={`h-1 transition-all ease-linear duration-100 ${barColor}`}
+          style={{ width: `${percentGone * 100}%` }}
+        ></div>
         <div className="px-4 py-5 sm:px-6">
-          <Result result={result} />
+          <dl className="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
+            <div className="sm:col-span-1">
+              <dt className="text-sm font-medium text-gray-500">Issued At</dt>
+              <dd className="mt-1 text-2xl text-gray-900">{claims.exp}</dd>
+            </div>
+            <div className="sm:col-span-1">
+              <dt className="text-right text-sm font-medium text-gray-500">
+                Expires In
+              </dt>
+              <dd
+                className={`text-right mt-1 text-2xl text-gray-900 ${textColor}`}
+              >
+                {percentGone === 1
+                  ? "Expired"
+                  : `${Math.round((claims.exp * 1000 - time) / 1000)} seconds`}
+              </dd>
+            </div>
+          </dl>
         </div>
       </div>
-    </ClerkLoaded>
+    </div>
   );
 };
 
-const Result = ({ result }) => {
-  return (
-    <dl className="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
-      <div className="sm:col-span-1">
-        <dt className="text-sm font-medium text-gray-500">Response time</dt>
-        {result ? (
-          <dd className="mt-1 text-2xl text-gray-900">
-            {result.responseTime} ms
-          </dd>
-        ) : (
-          <dd className="mt-1 text-2xl text-gray-900">-- ms</dd>
-        )}
-      </div>
-      <div className="sm:col-span-1">
-        <dt className="text-sm font-medium text-gray-500">
-          Authentication time
-        </dt>
-        {result ? (
-          <dd className="mt-1 text-2xl text-gray-900">
-            {result.authenticationTime || "< 1"} ms
-          </dd>
-        ) : (
-          <dd className="mt-1 text-2xl text-gray-900">-- ms</dd>
-        )}
-      </div>
+const JWTDemo = () => {
+  const { getToken } = useSession();
 
-      <div className="sm:col-span-1">
-        <dt className="text-sm font-medium text-gray-500">Response region</dt>
-        {result ? (
-          <dd className="mt-1 text-gray-900">{result.responseRegion}</dd>
-        ) : (
-          <dd className="mt-1 text-gray-900">--</dd>
-        )}
-      </div>
-      <div className="sm:col-span-1">
-        <dt className="text-sm font-medium text-gray-500">
-          Authentication result
-        </dt>
-        {result ? (
-          <dd className="mt-1 text-gray-900">
-            {result.userId ? "Signed in" : "Signed out"}
-          </dd>
-        ) : (
-          <dd className="mt-1 text-gray-900">--</dd>
-        )}
-      </div>
-      <div className="sm:col-span-2 hidden">
-        <dt className="text-sm font-medium text-gray-500">User ID</dt>
-        <dd className="mt-1 text-sm text-gray-900">null</dd>
-      </div>
-    </dl>
+  // setBackTo0 hacks the carousel so additional tokens
+  // come in from the left
+  const [time, setTime] = React.useState(new Date().getTime());
+  const [actuallyActive, setActuallyActive] = React.useState(0);
+  const [tokens, setTokens] = React.useState({
+    list: [],
+    active: null,
+    setBackTo0: false,
+  });
+  useInterval(async () => {
+    const token = await getToken();
+    if (tokens.list[0] !== token) {
+      const newActive = tokens.list.length !== 0 ? actuallyActive + 1 : 0;
+      setTokens({
+        list: [token, ...tokens.list],
+        active: newActive,
+        setBackTo0: newActive === 1,
+      });
+      setActuallyActive(newActive === 1 ? 0 : newActive);
+    }
+    setTime(new Date().getTime());
+  }, 100);
+  React.useEffect(() => {
+    if (tokens.setBackTo0) {
+      setTokens({
+        list: tokens.list,
+        active: 0,
+        setBackTo0: false,
+      });
+    }
+  }, [tokens]);
+
+  if (tokens.list.length === 0) {
+    return null;
+  }
+  return (
+    <>
+      <Carousel
+        key={`car` + tokens.list.length}
+        selectedItem={tokens.active}
+        onChange={(index) => {
+          setActuallyActive(index);
+        }}
+        showIndicators={false}
+        showThumbs={false}
+        showStatus={false}
+      >
+        {tokens.list.map((token, index) => (
+          <TokenRender
+            key={token}
+            token={token}
+            index={index}
+            total={tokens.list.length}
+            time={time}
+          />
+        ))}
+      </Carousel>
+    </>
   );
 };
