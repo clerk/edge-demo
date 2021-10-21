@@ -13,7 +13,7 @@ import {
 
 export default function Example() {
   return (
-    <div className="overflow-hidden">
+    <div className="bg-gray-50 overflow-hidden">
       <div className="relative max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <svg
           className="absolute top-0 left-full transform -translate-x-1/2 -translate-y-3/4 lg:left-auto lg:right-full lg:translate-x-2/3 lg:translate-y-1/4"
@@ -49,25 +49,49 @@ export default function Example() {
           />
         </svg>
 
-        <div className="relative lg:grid lg:grid-cols-6 lg:gap-x-8">
-          <div className="lg:col-span-2">
+        <div className="relative lg:grid lg:grid-cols-3 lg:gap-x-8">
+          <div className="lg:col-span-1">
             <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
               Stateless done right
             </h2>
             <p className="mt-3 max-w-md mx-auto text-base text-gray-500 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
-              Clerk uses short-lived JWTs to provide{" "}
-              <strong>revocable AND stateless</strong> authentication
+              Short-lived and automatically refreshing JWTs provide simple,
+              robust security
             </p>
           </div>
-          <SignedIn>
-            <div className="lg:col-span-4">
-              <JWTDemo />
+          <div className="lg:col-span-2">
+            <div className="relative lg:grid lg:grid-cols-2 lg:gap-x-8 mb-4">
+              <div className="lg:col-span-1">
+                <div className="flex items-center">
+                  <h2 className={`text-gray-900 text-2xl font-semibold mr-2`}>
+                    Short-lived
+                  </h2>
+                </div>
+                <p className="mt-1 text-gray-500">
+                  Each JWT only lasts 60 seconds. After a session is revoked,
+                  new JWTs cannot be generated and the user will be signed out.
+                </p>
+              </div>
+              <div className="lg:col-span-1">
+                <div className="flex items-center">
+                  <h2 className={`text-gray-900 text-2xl font-semibold mr-2`}>
+                    Automatically refreshing
+                  </h2>
+                </div>
+                <p className="mt-1 text-gray-500">
+                  Clerk makes security easy. When a JWT nears its expiration,
+                  our SDK will automatically generate a new one &ndash; there's
+                  no extra work for your team.
+                </p>
+              </div>
             </div>
-          </SignedIn>
-          <SignedOut>
-            <div className="lg:col-span-1">Test</div>
-            <div className="lg:col-span-3">Signed out</div>
-          </SignedOut>
+            <SignedIn>
+              <JWTDemo />
+            </SignedIn>
+            <SignedOut>
+              <div>Signed out</div>
+            </SignedOut>
+          </div>
         </div>
       </div>
     </div>
@@ -127,20 +151,27 @@ const TokenRender = ({ token, index, time, total }) => {
       : "text-red-600";
   return (
     <div className="p-2 text-left">
-      <div className="shadow sm:rounded-lg">
-        <div className="bg-white px-4 py-5 border-b border-gray-200 sm:px-6">
+      <div className="shadow rounded-lg bg-white">
+        <div className="px-4 py-5 border-b border-gray-200 sm:px-6">
           <div className="-ml-4 -mt-2 flex items-center justify-between flex-wrap sm:flex-nowrap">
             <div className="ml-4 mt-2">
               <h3 className="text-lg leading-6 font-medium text-gray-900">
-                {" "}
-                {index === 0 && "Currently active JWT"}
-                {index === 1 && "Previous JWT"}
-                {index >= 2 && `${index} JWTs ago`}
+                JWT #{total - index}{" "}
+                {index === 0 && (
+                  <span className="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
+                    Currently active
+                  </span>
+                )}
               </h3>
             </div>
             {total > 1 && (
-              <div className="ml-4 mt-2 flex-shrink-0">
-                #{total - index} of {total} generated so far
+              <div className="ml-4 mt-2 flex-shrink-0 text-gray-500">
+                {total} JWTs generated since page load
+              </div>
+            )}
+            {total == 1 && (
+              <div className="ml-4 mt-2 flex-shrink-0 text-gray-500">
+                1 JWT generated since page load
               </div>
             )}
           </div>
@@ -215,7 +246,7 @@ const JWTDemo = () => {
     return null;
   }
   return (
-    <>
+    <div className="-mx-2">
       <Carousel
         key={`car` + tokens.list.length}
         selectedItem={tokens.active}
@@ -236,6 +267,6 @@ const JWTDemo = () => {
           />
         ))}
       </Carousel>
-    </>
+    </div>
   );
 };

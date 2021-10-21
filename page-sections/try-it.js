@@ -1,5 +1,10 @@
 import React from "react";
-import { ClerkLoaded } from "@clerk/clerk-react";
+import {
+  SignedIn,
+  SignedOut,
+  ClerkLoading,
+  useClerk,
+} from "@clerk/clerk-react";
 import { getVercelRegion } from "../utils/vercelRegion";
 
 import {
@@ -50,19 +55,32 @@ export default function Example() {
         <div className="relative lg:grid lg:grid-cols-3 lg:gap-x-8">
           <div className="lg:col-span-1">
             <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-              Try the edge
+              Two strategies
             </h2>
             <p className="mt-3 max-w-md mx-auto text-base text-gray-500 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
-              Compare the latency at edge versus a single origin in Washington
-              DC, USA
+              Clerk supports both stateless and stateful authentication
+              strategies at the edge
             </p>
           </div>
           <div className="lg:col-span-1">
+            {" "}
             <Requester
               path="/api/helloEdge"
-              label="Edge request"
+              description={
+                <>
+                  Before the request, Clerk generates a short-lived JWT (JSON
+                  Web Token) to authenticate the user, usually in under 1
+                  millisecond.
+                </>
+              }
+              label="Stateless"
+              badge={
+                <span className="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
+                  Recommended
+                </span>
+              }
               labelColor="text-indigo-600"
-              button="Make edge request"
+              button="Try stateless auth"
               buttonColor="text-white"
               buttonShadow="shadow-lg"
               buttonBgColor="bg-indigo-600"
@@ -73,9 +91,16 @@ export default function Example() {
           <div className="lg:col-span-1">
             <Requester
               path="/api/hello"
-              label="Origin request"
-              labelColor="text-gray-500"
-              button="Make origin request"
+              label="Stateful"
+              description={
+                <>
+                  When a request is received, Clerk authenticates the user with
+                  an API request to our servers. This is much slower, but
+                  enables immediate session revocation.
+                </>
+              }
+              labelColor="text-gray-900"
+              button="Try stateful auth"
               buttonColor="text-indigo-700"
               buttonShadow="shadow-sm"
               buttonBgColor="bg-indigo-100"
@@ -92,6 +117,8 @@ export default function Example() {
 const Requester = ({
   path,
   label,
+  badge,
+  description,
   labelColor,
   button,
   buttonColor,
@@ -118,25 +145,59 @@ const Requester = ({
   };
 
   return (
-    <ClerkLoaded>
-      <h2
-        className={`${labelColor} text-base font-semibold tracking-wider uppercase`}
-      >
-        {label}
-      </h2>
+    <>
+      <div className="flex items-center">
+        <h2 className={`${labelColor} text-2xl font-semibold mr-2`}>{label}</h2>
+        {badge}
+      </div>
+      <p className="mt-1 text-gray-500">{description}</p>
+
       <div className="mt-4 bg-white shadow sm:rounded-lg">
-        <button
-          onClick={makeRequest}
-          type="button"
-          className={`block w-full items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg rounded-b-none ${buttonShadow} ${buttonColor} ${buttonBgColor} hover:${buttonBgColorHover} focus:outline-none focus:ring-2 focus:${buttonBgColorFocus}`}
-        >
-          {button}
-        </button>
-        <div className="px-4 py-5 sm:px-6">
+        <div className="border-b py-3 px-4 flex items-center justify-between flex-wrap sm:flex-nowrap">
+          <div>
+            <h3 className="text-lg leading-6 font-medium text-gray-900">
+              {label} demo
+            </h3>
+          </div>
+          <div className="flex-shrink-0">
+            <SignedIn>
+              <button
+                onClick={makeRequest}
+                type="button"
+                className={`relative inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow ${buttonColor} ${buttonBgColor} hover:${buttonBgColorHover} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:${buttonBgColorFocus}`}
+              >
+                Try it
+              </button>
+            </SignedIn>
+            <SignedOut>
+              <SignUpButton
+                type="button"
+                className={`relative inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow ${buttonColor} ${buttonBgColor} hover:${buttonBgColorHover} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:${buttonBgColorFocus}`}
+              >
+                Sign in to try it
+              </SignUpButton>
+            </SignedOut>
+            <ClerkLoading>
+              {/* This is a shim to prevent layout shift */}
+              <div style={{ height: "34px" }}></div>
+            </ClerkLoading>
+          </div>
+        </div>
+
+        <div className="px-4 py-3">
           <Result result={result} />
         </div>
       </div>
-    </ClerkLoaded>
+    </>
+  );
+};
+
+const SignUpButton = ({ children, ...props }) => {
+  const { openSignUp } = useClerk();
+  return (
+    <button {...props} onClick={() => openSignUp()}>
+      {children}
+    </button>
   );
 };
 
@@ -155,7 +216,7 @@ const Result = ({ result }) => {
       </div>
       <div className="sm:col-span-1">
         <dt className="text-sm font-medium text-gray-500">
-          Authentication time
+          Authentication speed
         </dt>
         {result ? (
           <dd className="mt-1 text-2xl text-gray-900">
@@ -175,13 +236,9 @@ const Result = ({ result }) => {
         )}
       </div>
       <div className="sm:col-span-1">
-        <dt className="text-sm font-medium text-gray-500">
-          Authentication result
-        </dt>
+        <dt className="text-sm font-medium text-gray-500">User ID</dt>
         {result ? (
-          <dd className="mt-1 text-gray-900">
-            {result.userId ? "Signed in" : "Signed out"}
-          </dd>
+          <dd className="mt-1 text-gray-900">{result.userId}</dd>
         ) : (
           <dd className="mt-1 text-gray-900">--</dd>
         )}

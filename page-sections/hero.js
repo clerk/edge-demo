@@ -5,10 +5,11 @@ import { MenuIcon, XIcon } from "@heroicons/react/outline";
 import { UserButton, SignedOut, SignedIn, useClerk } from "@clerk/clerk-react";
 
 const navigation = [
-  { name: "Product", href: "#" },
-  { name: "Features", href: "#" },
-  { name: "Marketplace", href: "#" },
-  { name: "Company", href: "#" },
+  { name: "Clerk Homepage", href: "https://clerk.dev" },
+  {
+    name: "More about Clerk and Next.js",
+    href: "https://clerk.dev/solutions/nextjs-authentication",
+  },
 ];
 
 export default function Example() {
@@ -122,7 +123,7 @@ export default function Example() {
                 </div>
                 <div className="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
                   <SignedIn>
-                    <UserButton />
+                    <UserButton afterSignOutAllUrl="/" />
                   </SignedIn>
                   <SignedOut>
                     <SignInButton>Sign in</SignInButton>
@@ -187,7 +188,7 @@ export default function Example() {
           <div className="mt-16 mx-auto max-w-7xl px-4 sm:mt-24 sm:px-6">
             <div className="text-center">
               <h1 className="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
-                <span className="block">Authentication at edge</span>
+                <span className="block">Authentication at the edge</span>
                 <span className="block text-indigo-600">
                   with Clerk and Next.js
                 </span>
