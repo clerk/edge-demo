@@ -264,7 +264,7 @@ const SessionMock2 = () => {
         </dl>
         <div className="absolute top-0 left-0 right-0 bottom-0 backdrop-filter backdrop-blur bg-gray-900 bg-opacity-50 flex flex-col justify-center items-center">
           <p className="text-base font-semibold mb-3 text-center">
-            Open{" "}
+            Sign in to{" "}
             {window.location.origin.substring(
               window.location.protocol.length + 2
             )}{" "}
