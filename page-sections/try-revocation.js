@@ -1,5 +1,12 @@
 import React from "react";
-import { ClerkLoaded } from "@clerk/clerk-react";
+import {
+  SignedIn,
+  SignedOut,
+  ClerkLoading,
+  useClerk,
+  useSession,
+  useUser,
+} from "@clerk/clerk-react";
 import { getVercelRegion } from "../utils/vercelRegion";
 
 import {
@@ -11,7 +18,7 @@ import {
 
 export default function Example() {
   return (
-    <div className="overflow-hidden">
+    <div className="bg-gray-50 overflow-hidden">
       <div className="relative max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <svg
           className="absolute top-0 left-full transform -translate-x-1/2 -translate-y-3/4 lg:left-auto lg:right-full lg:translate-x-2/3 lg:translate-y-1/4"
@@ -50,38 +57,16 @@ export default function Example() {
         <div className="relative lg:grid lg:grid-cols-3 lg:gap-x-8">
           <div className="lg:col-span-1">
             <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-              Stateless done right
+              Try revocation
             </h2>
             <p className="mt-3 max-w-md mx-auto text-base text-gray-500 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
-              Clerk uses short-lived JWTs to provide{" "}
-              <strong>revocable AND stateless</strong> authentication
+              Sign in on two devices to test revocation
             </p>
           </div>
-          <div className="lg:col-span-1">
-            <Requester
-              path="/api/helloEdge"
-              label="Edge request"
-              labelColor="text-indigo-600"
-              button="Make edge request"
-              buttonColor="text-white"
-              buttonShadow="shadow-lg"
-              buttonBgColor="bg-indigo-600"
-              buttonBgColorHover="bg-indigo-700"
-              buttonBgColorFocus="ring-indigo-500"
-            />
-          </div>
-          <div className="lg:col-span-1">
-            <Requester
-              path="/api/hello"
-              label="Origin request"
-              labelColor="text-gray-500"
-              button="Make origin request"
-              buttonColor="text-indigo-700"
-              buttonShadow="shadow-sm"
-              buttonBgColor="bg-indigo-100"
-              buttonBgColorHover="bg-indigo-200"
-              buttonBgColorFocus="ring-indigo-200"
-            />
+          <div className="lg:col-span-2">
+            <SignedIn>
+              <SessionList />
+            </SignedIn>
           </div>
         </div>
       </div>
@@ -89,107 +74,109 @@ export default function Example() {
   );
 }
 
-const Requester = ({
-  path,
-  label,
-  labelColor,
-  button,
-  buttonColor,
-  buttonBgColor,
-  buttonBgColorFocus,
-  buttonBgColorHover,
-  buttonShadow,
-}) => {
-  const [result, setResult] = React.useState(null);
-  const makeRequest = async () => {
-    const start = new Date().getTime();
-    const response = await fetch(path, {
-      method: "GET",
-    });
-    if (response.status === 200) {
-      const responseTime = new Date().getTime() - start;
-      const data = await response.json();
-      setResult({
-        responseTime: responseTime,
-        responseRegion: getVercelRegion(response.headers.get("x-vercel-id")),
-        ...data,
-      });
-    }
-  };
+// import {
+//   ActivityListItem,
+//   ActivityListItemSkeleton,
+// } from 'ui/userProfile/Security/DevicesAndActivity/ActivityListItem';
 
+const SessionItem = ({ userSession, index }) => {
+  // deviceSession is the particular session on this device
+  const deviceSession = useSession();
+  const thisDevice = deviceSession.id === userSession.id;
+  const activity = userSession.latestActivity;
   return (
-    <ClerkLoaded>
-      <h2
-        className={`${labelColor} text-base font-semibold tracking-wider uppercase`}
-      >
-        {label}
-      </h2>
-      <div className="mt-4 bg-white shadow sm:rounded-lg">
-        <button
-          onClick={makeRequest}
-          type="button"
-          className={`block w-full items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg rounded-b-none ${buttonShadow} ${buttonColor} ${buttonBgColor} hover:${buttonBgColorHover} focus:outline-none focus:ring-2 focus:${buttonBgColorFocus}`}
-        >
-          {button}
-        </button>
-        <div className="px-4 py-5 sm:px-6">
-          <Result result={result} />
+    <div className="bg-white shadow sm:rounded-lg">
+      <div className="border-b py-3 px-4 flex items-center justify-between flex-wrap sm:flex-nowrap">
+        <div>
+          <h3 className="text-lg leading-6 font-medium text-gray-900">
+            Session #{index + 1}{" "}
+            {thisDevice && (
+              <span className="inline-flex align-bottom items-center px-3 py-0.5 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
+                This device
+              </span>
+            )}
+          </h3>
+        </div>
+        <div className="flex-shrink-0">
+          {!thisDevice ? (
+            <button
+              type="button"
+              className={`relative inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`}
+              onClick={() => {
+                userSession.revoke();
+              }}
+            >
+              Revoke
+            </button>
+          ) : (
+            <div style={{ height: "34px" }}></div>
+          )}
         </div>
       </div>
-    </ClerkLoaded>
+
+      <div className="px-4 py-3">
+        <div>
+          <dl className="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
+            <div className="sm:col-span-1">
+              <dt className="text-sm font-medium text-gray-500">IP Address</dt>
+              <dd className="mt-1 text-gray-900 overflow-ellipsis">
+                {activity.ipAddress}
+              </dd>
+            </div>
+            <div className="sm:col-span-1">
+              <dt className="text-sm font-medium text-gray-500">Device type</dt>
+              <dd className="mt-1 text-gray-900">
+                {activity.isMobile ? "Mobile" : "Desktop"}
+              </dd>
+            </div>
+
+            <div className="sm:col-span-1">
+              <dt className="text-sm font-medium text-gray-500">Browser</dt>
+              <dd className="mt-1 text-gray-900">{activity.browserName}</dd>
+            </div>
+            <div className="sm:col-span-1">
+              <dt className="text-sm font-medium text-gray-500">
+                Operating system
+              </dt>
+              <dd className="mt-1 text-sm text-gray-900">
+                {activity.deviceType}
+              </dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </div>
   );
 };
 
-const Result = ({ result }) => {
+function SessionList() {
+  const user = useUser();
+  const session = useSession();
+
+  // userSessions is a list of all sessions for the user
+  const [userSessions, setUserSessions] = React.useState(null);
+
+  React.useEffect(() => {
+    user.getSessions().then((userSessions) => {
+      userSessions.sort((x, y) => y.expireAt.getTime() - x.expireAt.getTime());
+      userSessions.reverse();
+      setUserSessions(userSessions);
+    });
+  }, [user]);
+
+  if (!userSessions) {
+    return null;
+  }
+
   return (
-    <dl className="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
-      <div className="sm:col-span-1">
-        <dt className="text-sm font-medium text-gray-500">Response time</dt>
-        {result ? (
-          <dd className="mt-1 text-2xl text-gray-900">
-            {result.responseTime} ms
-          </dd>
-        ) : (
-          <dd className="mt-1 text-2xl text-gray-900">-- ms</dd>
-        )}
-      </div>
-      <div className="sm:col-span-1">
-        <dt className="text-sm font-medium text-gray-500">
-          Authentication time
-        </dt>
-        {result ? (
-          <dd className="mt-1 text-2xl text-gray-900">
-            {result.authenticationTime || "< 1"} ms
-          </dd>
-        ) : (
-          <dd className="mt-1 text-2xl text-gray-900">-- ms</dd>
-        )}
-      </div>
-
-      <div className="sm:col-span-1">
-        <dt className="text-sm font-medium text-gray-500">Response region</dt>
-        {result ? (
-          <dd className="mt-1 text-gray-900">{result.responseRegion}</dd>
-        ) : (
-          <dd className="mt-1 text-gray-900">--</dd>
-        )}
-      </div>
-      <div className="sm:col-span-1">
-        <dt className="text-sm font-medium text-gray-500">
-          Authentication result
-        </dt>
-        {result ? (
-          <dd className="mt-1 text-gray-900">
-            {result.userId ? "Signed in" : "Signed out"}
-          </dd>
-        ) : (
-          <dd className="mt-1 text-gray-900">--</dd>
-        )}
-      </div>
-      <div className="sm:col-span-2 hidden">
-        <dt className="text-sm font-medium text-gray-500">User ID</dt>
-        <dd className="mt-1 text-sm text-gray-900">null</dd>
-      </div>
-    </dl>
+    <div className="relative lg:grid lg:grid-cols-2 lg:gap-x-8">
+      {userSessions.map((userSession, index) => (
+        <SessionItem
+          key={userSession.id}
+          userSession={userSession}
+          index={index}
+        />
+      ))}
+    </div>
   );
-};
+}

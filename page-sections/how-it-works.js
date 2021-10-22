@@ -158,7 +158,7 @@ const TokenRender = ({ token, index, time, total }) => {
               <h3 className="text-lg leading-6 font-medium text-gray-900">
                 JWT #{total - index}{" "}
                 {index === 0 && (
-                  <span className="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
+                  <span className="inline-flex align-bottom items-center px-3 py-0.5 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
                     Currently active
                   </span>
                 )}

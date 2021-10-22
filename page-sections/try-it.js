@@ -63,7 +63,6 @@ export default function Example() {
             </p>
           </div>
           <div className="lg:col-span-1">
-            {" "}
             <Requester
               path="/api/helloEdge"
               description={
