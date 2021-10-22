@@ -69,8 +69,8 @@ export default function TwoStrategies() {
               description={
                 <>
                   Before the request, Clerk generates a short-lived JWT (JSON
-                  Web Token) to authenticate the user, usually in under 1
-                  millisecond.
+                  Web Token) to authenticate the user. Then, verification of the
+                  JWT takes less than 2ms!
                 </>
               }
               label="Stateless"
@@ -94,9 +94,9 @@ export default function TwoStrategies() {
               label="Stateful"
               description={
                 <>
-                  When the request is received, Clerk authenticates the user
-                  with an API call to our servers. This is much slower, but
-                  enables immediate session revocation.
+                  Clerk's API is used to authenticate the user. This adds
+                  network latency, but enables sessions to be revoked
+                  immediately.
                 </>
               }
               labelColor="text-gray-900"

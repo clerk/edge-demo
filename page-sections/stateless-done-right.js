@@ -56,8 +56,8 @@ export default function StatelessDoneRight() {
               Stateless done right
             </h2>
             <p className="mt-3 max-w-md mx-auto text-base text-gray-500 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
-              Short-lived and automatically refreshing JWTs provide simple,
-              robust security
+              Short-lived, automatically-refreshing JWTs provide simple, robust
+              security
             </p>
           </div>
           <div className="lg:col-span-2">
@@ -69,20 +69,21 @@ export default function StatelessDoneRight() {
                   </h2>
                 </div>
                 <p className="mt-1 text-gray-500">
-                  Each JWT only lasts 60 seconds. After a session is revoked,
-                  new JWTs cannot be generated and the user will be signed out.
+                  Each JWT only lasts 60 seconds. If a session needs to be
+                  revoked, this short lifetime ensures attackers will be stopped
+                  within 60 seconds.
                 </p>
               </div>
               <div className="lg:col-span-1">
                 <div className="flex items-center">
                   <h2 className={`text-gray-900 text-2xl font-semibold mr-2`}>
-                    Automatically refreshing
+                    Automatically-refreshing
                   </h2>
                 </div>
                 <p className="mt-1 text-gray-500">
-                  Clerk makes security easy. When a JWT nears its expiration,
-                  our SDK will automatically generate a new one &ndash; there's
-                  no extra work for your team.
+                  Clerk's Next.js SDK automatically refreshes tokens before they
+                  expire, so there's no extra work for developers. Watch it in
+                  real-time below.
                 </p>
               </div>
             </div>
