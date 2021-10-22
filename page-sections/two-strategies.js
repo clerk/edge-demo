@@ -65,7 +65,7 @@ export default function TwoStrategies() {
           </div>
           <div className="lg:col-span-1">
             <Requester
-              path="/api/helloEdge"
+              path="/api/stateless"
               description={
                 <>
                   Before the request, Clerk generates a short-lived JWT (JSON
@@ -90,7 +90,7 @@ export default function TwoStrategies() {
           </div>
           <div className="lg:col-span-1">
             <Requester
-              path="/api/hello"
+              path="/api/stateful"
               label="Stateful"
               description={
                 <>

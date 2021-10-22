@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { withSession } from "@clerk/edge";
+import { withSession } from "../../../utils/edge";
 
 const authTimer = (handler) => {
   return (evt) => {
@@ -9,7 +9,7 @@ const authTimer = (handler) => {
 };
 
 export default authTimer(
-  withSession((evt) => {
+  withSession(async (evt) => {
     const authTime = new Date().getTime() - evt.request.authStart;
     return new Response(
       JSON.stringify({
