@@ -16,7 +16,7 @@ import {
   ScaleIcon,
 } from "@heroicons/react/outline";
 
-export default function Example() {
+export default function TryRevocation() {
   return (
     <div className="bg-gray-50 overflow-hidden">
       <div className="relative max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
