@@ -1,22 +1,13 @@
-import { NextResponse } from "next/server";
-import { withSession } from "../../../utils/edge";
+import { requireSession } from "../../../utils/edge";
 
-const authTimer = (handler) => {
-  return (evt) => {
-    evt.request.authStart = new Date().getTime();
-    return handler(evt);
-  };
+// The handler should return a Response object
+const handler = async (evt) => {
+  return new Response(
+    JSON.stringify({
+      ...evt.request.session,
+    }),
+    { status: 200, headers: { "Content-Type": "application/json" } }
+  );
 };
 
-export default authTimer(
-  withSession(async (evt) => {
-    const authTime = new Date().getTime() - evt.request.authStart;
-    return new Response(
-      JSON.stringify({
-        ...evt.request.session,
-        authenticationTime: authTime,
-      }),
-      { status: 200 }
-    );
-  })
-);
+export default requireSession(handler);
