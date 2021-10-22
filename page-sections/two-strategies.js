@@ -59,8 +59,8 @@ export default function TwoStrategies() {
               Two strategies
             </h2>
             <p className="mt-3 max-w-md mx-auto text-base text-gray-500 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
-              Clerk supports both stateless and stateful authentication
-              strategies at the edge
+              Clerk supports both stateless and stateful authentication at the
+              edge
             </p>
           </div>
           <div className="lg:col-span-1">
@@ -75,7 +75,7 @@ export default function TwoStrategies() {
               }
               label="Stateless"
               badge={
-                <span className="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
+                <span className="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-indigo-100 text-indigo-700">
                   Recommended
                 </span>
               }
@@ -229,14 +229,12 @@ const Result = ({ result }) => {
       <div className="sm:col-span-1">
         <dt className="text-sm font-medium text-gray-500">User ID</dt>
         {result ? (
-          <dd className="mt-1 text-gray-900">{result.userId}</dd>
+          <dd className="mt-1 text-gray-900 overflow-hidden overflow-ellipsis">
+            {result.userId}
+          </dd>
         ) : (
           <dd className="mt-1 text-gray-900">--</dd>
         )}
-      </div>
-      <div className="sm:col-span-2 hidden">
-        <dt className="text-sm font-medium text-gray-500">User ID</dt>
-        <dd className="mt-1 text-sm text-gray-900">null</dd>
       </div>
     </dl>
   );

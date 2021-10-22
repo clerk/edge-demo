@@ -125,7 +125,7 @@ const SessionItem = ({ userSession, index }) => {
           <h3 className="text-lg leading-6 font-medium text-gray-900">
             Session #{index + 1}{" "}
             {thisDevice && (
-              <span className="inline-flex align-bottom items-center px-3 py-0.5 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
+              <span className="inline-flex align-bottom items-center px-3 py-0.5 rounded-full text-sm font-medium bg-indigo-100 text-indigo-700">
                 This device
               </span>
             )}
@@ -188,7 +188,7 @@ const SessionMock = () => {
         <div>
           <h3 className="text-lg leading-6 font-medium text-gray-900">
             Device #1{" "}
-            <span className="inline-flex align-bottom items-center px-3 py-0.5 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
+            <span className="inline-flex align-bottom items-center px-3 py-0.5 rounded-full text-sm font-medium bg-indigo-100 text-indigo-700">
               This device
             </span>
           </h3>
