@@ -5,6 +5,7 @@ import {
   ClerkLoading,
   useClerk,
 } from "@clerk/clerk-react";
+import { SignUpButton, SignUpCover } from "../utils/buttons";
 import { getVercelRegion } from "../utils/vercelRegion";
 
 import {
@@ -93,8 +94,8 @@ export default function TwoStrategies() {
               label="Stateful"
               description={
                 <>
-                  When a request is received, Clerk authenticates the user with
-                  an API request to our servers. This is much slower, but
+                  When the request is received, Clerk authenticates the user
+                  with an API call to our servers. This is much slower, but
                   enables immediate session revocation.
                 </>
               }
@@ -151,7 +152,7 @@ const Requester = ({
       </div>
       <p className="mt-1 text-gray-500">{description}</p>
 
-      <div className="mt-4 bg-white shadow sm:rounded-lg">
+      <div className="mt-4 bg-white shadow rounded-lg overflow-hidden">
         <div className="border-b py-3 px-4 flex items-center justify-between flex-wrap sm:flex-nowrap">
           <div>
             <h3 className="text-lg leading-6 font-medium text-gray-900">
@@ -169,12 +170,7 @@ const Requester = ({
               </button>
             </SignedIn>
             <SignedOut>
-              <SignUpButton
-                type="button"
-                className={`relative inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow ${buttonColor} ${buttonBgColor} hover:${buttonBgColorHover} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:${buttonBgColorFocus}`}
-              >
-                Sign in to try it
-              </SignUpButton>
+              <div style={{ height: "34px" }}></div>
             </SignedOut>
             <ClerkLoading>
               {/* This is a shim to prevent layout shift */}
@@ -183,20 +179,16 @@ const Requester = ({
           </div>
         </div>
 
-        <div className="px-4 py-3">
+        <div className="px-4 py-3 relative">
           <Result result={result} />
+          <SignedOut>
+            <SignUpCover>
+              Sign in to test {label.toLowerCase()} latency
+            </SignUpCover>
+          </SignedOut>
         </div>
       </div>
     </>
-  );
-};
-
-const SignUpButton = ({ children, ...props }) => {
-  const { openSignUp } = useClerk();
-  return (
-    <button {...props} onClick={() => openSignUp()}>
-      {children}
-    </button>
   );
 };
 

@@ -3,6 +3,7 @@ import { Fragment } from "react";
 import { Popover, Transition } from "@headlessui/react";
 import { MenuIcon, XIcon } from "@heroicons/react/outline";
 import { UserButton, SignedOut, SignedIn, useClerk } from "@clerk/clerk-react";
+import { SignInButton } from "../utils/buttons";
 
 const navigation = [
   { name: "Clerk Homepage", href: "https://clerk.dev" },
@@ -126,7 +127,9 @@ export default function Example() {
                     <UserButton afterSignOutAllUrl="/" />
                   </SignedIn>
                   <SignedOut>
-                    <SignInButton>Sign in</SignInButton>
+                    <SignInButton className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                      Sign in
+                    </SignInButton>
                   </SignedOut>
                 </div>
               </nav>
@@ -204,8 +207,3 @@ export default function Example() {
     </div>
   );
 }
-
-const SignInButton = ({ children }) => {
-  const { redirectToSignIn } = useClerk();
-  return <button onClick={() => redirectToSignIn()}>{children}</button>;
-};
