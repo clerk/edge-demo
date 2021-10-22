@@ -65,17 +65,17 @@
     "@babel/helper-validator-identifier" "^7.14.9"
     to-fast-properties "^2.0.0"
 
-"@clerk/clerk-react@2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@clerk/clerk-react/-/clerk-react-2.0.0.tgz#3fabdcbe5bcdf3dc6bcc33800499d75e789c87af"
-  integrity sha512-CmsFb85z4DMCCD74mpjCAyimDoJ3t9pgefKznqG+wTyUg09Zlppnl+arIg5qrqFWVZbzybtg/i/oQq9HOtxkKA==
+"@clerk/clerk-react@2.0.1-staging.0":
+  version "2.0.1-staging.0"
+  resolved "https://registry.yarnpkg.com/@clerk/clerk-react/-/clerk-react-2.0.1-staging.0.tgz#f2e46136a41ab9fde50afffb468c0796d1a87a29"
+  integrity sha512-35NNYClM8sG7/frsNQEIv1gXGX8tJ8SBK4863k8G3X18z+4BlQXPr4d+iD7L/lDV1E5SIoJrUMXUeOzzkl2x8w==
   dependencies:
     "@clerk/types" "1.14.3"
 
-"@clerk/clerk-sdk-node@^2.0.0", "@clerk/clerk-sdk-node@^2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@clerk/clerk-sdk-node/-/clerk-sdk-node-2.0.1.tgz#bdc0b4665f87164856e2c794cec389cc1a2759ab"
-  integrity sha512-53NOLzlXQSTHSkfgFcLTkj0VBs9wroaomTbEZInYzqETRslB7Dp1oNlfzKSbh1DCRYCjEhDeueb59yCCKu1duw==
+"@clerk/clerk-sdk-node@^2.0.2":
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/@clerk/clerk-sdk-node/-/clerk-sdk-node-2.0.2.tgz#3fa3c2af0e8d65594ebffbbb41b1a5ee38a01b9f"
+  integrity sha512-tdLGMZDUIWS/ZK6C3Q0v9JRf6XMsFK7G9LXuEP+2U5AyUz32NJF7qM/WmhvMX54tdrZW656JUOq4z+iFNxosiA==
   dependencies:
     "@types/cookies" "^0.7.6"
     "@types/jsonwebtoken" "^8.5.4"
@@ -92,13 +92,13 @@
   resolved "https://registry.yarnpkg.com/@clerk/edge/-/edge-0.0.1.tgz#f45c55fe8b32654b3b721b4528b3541eea6de245"
   integrity sha512-gJkaLtse9FBnyu/xvqFKxbUiQ9a8ft2qOTy9TkoDQu2xKZYDek02IAhkhIhB0/b+d8XzzImyzUqEQ7ZUuNM6XA==
 
-"@clerk/nextjs@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@clerk/nextjs/-/nextjs-2.0.0.tgz#d181073503a52077a63f2f3a611bcf45330709c5"
-  integrity sha512-XqoFPXdBCOOwd/+EZi89oTyDZVtiH7QxDdny/B0MJ3q76gJS/3sbbshBB0OXIMcHVtKkfcLfzAE+fKIZUu4aAQ==
+"@clerk/nextjs@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@clerk/nextjs/-/nextjs-2.0.1.tgz#fa527a43f8e1f0ffd678483245df59a681449d2f"
+  integrity sha512-fgzD4UZ6l1YCGgtenBqj3ISKD8YUCfuybDMpv/9U4jJC9ZwZDwrJrEzb4geenefqypEP0EVWcnO7Gsitbyzgfw==
   dependencies:
-    "@clerk/clerk-react" "2.0.0"
-    "@clerk/clerk-sdk-node" "^2.0.0"
+    "@clerk/clerk-react" "2.0.1-staging.0"
+    "@clerk/clerk-sdk-node" "^2.0.2"
     "@clerk/types" "1.14.3"
     tslib "^2.3.1"
 
