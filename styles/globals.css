@@ -14,3 +14,8 @@ a {
 * {
   box-sizing: border-box;
 }
+
+.carousel-root .carousel.carousel-slider .control-arrow {
+  background-color: rgba(0, 0, 0, 0.075);
+  opacity: 1;
+}
