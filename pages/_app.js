@@ -1,8 +1,7 @@
-import "../styles/globals.css";
-import "tailwindcss/tailwind.css";
-import "react-responsive-carousel/lib/styles/carousel.min.css";
-import { ClerkProvider, RedirectToSignIn } from "@clerk/nextjs";
-import { useRouter } from "next/router";
+import '../styles/globals.css';
+import 'tailwindcss/tailwind.css';
+import 'react-responsive-carousel/lib/styles/carousel.min.css';
+import { ClerkProvider } from '@clerk/nextjs';
 
 function MyApp({ Component, pageProps }) {
   return (

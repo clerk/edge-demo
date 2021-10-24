@@ -16,7 +16,7 @@ export const JWTMock = () => {
             </div>
           </div>
           <div
-            className={`h-1 transition-all ease-linear duration-100 bg-green-500`}
+            className='h-1 transition-all ease-linear duration-100 bg-green-500'
             style={{ width: '33%' }}
           />
           <div className='px-4 py-5 sm:px-6'>

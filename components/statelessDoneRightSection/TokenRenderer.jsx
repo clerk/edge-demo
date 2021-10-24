@@ -1,35 +1,51 @@
 import React from 'react';
 
-export const TokenRenderer = ({ token, index, time, total }) => {
-  const claims = JSON.parse(atob(token.split('.')[1]));
-  const percentGone = Math.min(
-    1,
-    (time - claims.iat * 1000) / (claims.exp * 1000 - claims.iat * 1000),
+const getColorForPercentage = p => {
+  return p < 50
+    ? 'green-500'
+    : p < 60
+    ? 'yellow-300'
+    : p < 70
+    ? 'yellow-400'
+    : p < 80
+    ? 'yellow-500'
+    : p < 90
+    ? 'yellow-600'
+    : 'red-600';
+};
+
+const parseToken = token => {
+  return JSON.parse(atob(token.split('.')[1]));
+};
+
+const parseClaims = claims => {
+  const now = Math.round(Date.now() / 1000);
+  const issuedAt = claims.iat;
+  const expiresAt = claims.exp;
+  const totalValidForSec = expiresAt - issuedAt;
+  const timeToLiveInSec = Math.max(expiresAt - now, 0);
+  return { issuedAt, expiresAt, totalValidForSec, timeToLiveInSec, now };
+};
+
+const useForceRender = (delay = 1) => {
+  const [s, ss] = React.useState(0);
+  React.useEffect(() => {
+    const id = setInterval(() => ss(s + 1), delay);
+    return () => clearInterval(id);
+  });
+};
+
+export const TokenRenderer = ({ token, index, total }) => {
+  useForceRender();
+  const { totalValidForSec, timeToLiveInSec, issuedAt } = parseClaims(
+    parseToken(token),
   );
-  const barColor =
-    percentGone < 0.5
-      ? 'bg-green-500'
-      : percentGone < 0.6
-      ? 'bg-yellow-300'
-      : percentGone < 0.7
-      ? 'bg-yellow-400'
-      : percentGone < 0.8
-      ? 'bg-yellow-500'
-      : percentGone < 0.9
-      ? 'bg-yellow-600'
-      : 'bg-red-600';
-  const textColor =
-    percentGone < 0.5
-      ? 'text-green-500'
-      : percentGone < 0.6
-      ? 'text-yellow-300'
-      : percentGone < 0.7
-      ? 'text-yellow-400'
-      : percentGone < 0.8
-      ? 'text-yellow-500'
-      : percentGone < 0.9
-      ? 'text-yellow-600'
-      : 'text-red-600';
+  const percentGone =
+    100 - Math.round((100 * timeToLiveInSec) / totalValidForSec);
+
+  const barColor = 'bg-' + getColorForPercentage(percentGone);
+  const textColor = 'text-' + getColorForPercentage(percentGone);
+
   return (
     <div className='p-2 text-left'>
       <div className='shadow rounded-lg bg-white'>
@@ -45,14 +61,14 @@ export const TokenRenderer = ({ token, index, time, total }) => {
         </div>
         <div
           className={`h-1 transition-all ease-linear duration-100 ${barColor}`}
-          style={{ width: `${percentGone * 100}%` }}
+          style={{ width: `${percentGone}%` }}
         />
         <div className='px-7 py-5'>
           <dl className='flex justify-between'>
             <div>
               <dt className='text-sm font-medium text-gray-500'>Issued At</dt>
               <dd className='mt-1 text-base sm:text-2xl text-gray-900'>
-                {new Date(claims.iat * 1000).toLocaleString()}
+                {new Date(issuedAt * 1000).toLocaleString()}
               </dd>
             </div>
             <div>
@@ -62,9 +78,7 @@ export const TokenRenderer = ({ token, index, time, total }) => {
               <dd
                 className={`text-right mt-1 text-base sm:text-2xl text-gray-900 ${textColor}`}
               >
-                {percentGone === 1
-                  ? 'Expired'
-                  : `${Math.round((claims.exp * 1000 - time) / 1000)} seconds`}
+                {percentGone === 100 ? 'Expired' : `${timeToLiveInSec} seconds`}
               </dd>
             </div>
           </dl>

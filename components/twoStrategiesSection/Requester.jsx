@@ -12,19 +12,19 @@ export const Requester = ({
   badge,
   description,
   labelColor,
-  button,
   buttonColor,
   buttonBgColor,
   buttonBgColorFocus,
   buttonBgColorHover,
-  buttonShadow,
 }) => {
   const [result, setResult] = React.useState(null);
+
   const makeRequest = async () => {
     const start = new Date().getTime();
     const response = await fetch(path, {
       method: 'GET',
     });
+
     if (response.status === 200) {
       const responseTime = new Date().getTime() - start;
       const data = await response.json();
