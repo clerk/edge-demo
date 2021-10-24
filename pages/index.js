@@ -1,15 +1,18 @@
-import Hero from "../page-sections/hero";
-import TwoStrategies from "../page-sections/two-strategies";
-import StatelessDoneRight from "../page-sections/stateless-done-right";
-import TryRevocation from "../page-sections/try-revocation";
+import {
+  HeroSection,
+  Layout,
+  StatelessDoneRightSection,
+  TryRenovationSection,
+  TwoStrategiesSection,
+} from 'components';
 
 export default function Home() {
   return (
-    <>
-      <Hero />
-      <TwoStrategies />
-      <StatelessDoneRight />
-      <TryRevocation />
-    </>
+    <Layout>
+      <HeroSection />
+      <TwoStrategiesSection />
+      <StatelessDoneRightSection />
+      <TryRenovationSection />
+    </Layout>
   );
 }
