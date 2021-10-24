@@ -19,6 +19,13 @@ const parseToken = token => {
   return JSON.parse(atob(token.split('.')[1]));
 };
 
+const useForceRenderWhileValid = ttl => {
+  const { stop } = useForceRender();
+  if (ttl === 0) {
+    stop();
+  }
+};
+
 const parseClaims = claims => {
   const now = Math.round(Date.now() / 1000);
   const issuedAt = claims.iat;
@@ -29,10 +36,10 @@ const parseClaims = claims => {
 };
 
 export const TokenCard = ({ token, index, total }) => {
-  useForceRender();
   const { totalValidForSec, timeToLiveInSec, issuedAt } = parseClaims(
     parseToken(token),
   );
+  useForceRenderWhileValid(timeToLiveInSec);
   const percentGone =
     100 - Math.round((100 * timeToLiveInSec) / totalValidForSec);
 
