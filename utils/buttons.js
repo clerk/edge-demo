@@ -1,4 +1,4 @@
-import { useClerk } from "@clerk/clerk-react";
+import { useClerk } from '@clerk/nextjs';
 
 export const SignInButton = ({ children, ...props }) => {
   const { openSignIn } = useClerk();
@@ -20,10 +20,10 @@ export const SignUpButton = ({ children, ...props }) => {
 
 export const SignUpCover = ({ children }) => {
   return (
-    <div className="absolute top-0 left-0 right-0 bottom-0 backdrop-filter backdrop-blur bg-gray-900 bg-opacity-50 flex justify-center items-center">
+    <div className='absolute top-0 left-0 right-0 bottom-0 backdrop-filter backdrop-blur bg-gray-900 bg-opacity-50 flex justify-center items-center'>
       <SignUpButton
-        type="button"
-        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        type='button'
+        className='inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
       >
         {children}
       </SignUpButton>
@@ -33,10 +33,10 @@ export const SignUpCover = ({ children }) => {
 
 export const SignInCover = ({ children }) => {
   return (
-    <div className="absolute top-0 left-0 right-0 bottom-0 backdrop-filter backdrop-blur bg-gray-900 bg-opacity-50 flex justify-center items-center">
+    <div className='absolute top-0 left-0 right-0 bottom-0 backdrop-filter backdrop-blur bg-gray-900 bg-opacity-50 flex justify-center items-center'>
       <SignInButton
-        type="button"
-        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        type='button'
+        className='inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
       >
         {children}
       </SignInButton>
