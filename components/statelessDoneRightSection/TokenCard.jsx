@@ -1,4 +1,5 @@
 import React from 'react';
+import { useForceRender } from 'utils/forceRender';
 
 const getColorForPercentage = p => {
   return p < 50
@@ -27,15 +28,7 @@ const parseClaims = claims => {
   return { issuedAt, expiresAt, totalValidForSec, timeToLiveInSec, now };
 };
 
-const useForceRender = (delay = 1) => {
-  const [s, ss] = React.useState(0);
-  React.useEffect(() => {
-    const id = setInterval(() => ss(s + 1), delay);
-    return () => clearInterval(id);
-  });
-};
-
-export const TokenRenderer = ({ token, index, total }) => {
+export const TokenCard = ({ token, index, total }) => {
   useForceRender();
   const { totalValidForSec, timeToLiveInSec, issuedAt } = parseClaims(
     parseToken(token),

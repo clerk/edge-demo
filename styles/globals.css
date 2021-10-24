@@ -4,6 +4,9 @@ body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
     Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+
+  --swiper-theme-color: rgba(51, 91, 241, 1) !important;
+  --swiper-navigation-size: 20px;
 }
 
 a {
@@ -18,4 +21,12 @@ a {
 .carousel-root .carousel.carousel-slider .control-arrow {
   background-color: rgba(0, 0, 0, 0.075);
   opacity: 1;
+}
+
+.swiper {
+  padding-bottom: 2rem !important;
+}
+
+.cl-swiper-pagination {
+
 }

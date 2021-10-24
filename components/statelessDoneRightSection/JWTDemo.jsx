@@ -1,106 +1,82 @@
-import { useSession } from '@clerk/nextjs';
 import React from 'react';
-import { Carousel } from 'react-responsive-carousel';
-
-import { TokenRenderer } from './TokenRenderer';
+import { useSession } from '@clerk/nextjs';
+import { Pagination } from 'swiper';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { TokenCard } from './TokenCard';
 
 function useInterval(callback, delay) {
   const savedCallback = React.useRef(callback);
 
-  // Remember the latest callback if it changes.
   React.useLayoutEffect(() => {
     savedCallback.current = callback;
   }, [callback]);
 
-  // Set up the interval.
   React.useEffect(() => {
-    // Don't schedule if no delay is specified.
     if (!delay) {
       return;
     }
-
     const id = setInterval(() => savedCallback.current(), delay);
-
     return () => clearInterval(id);
   }, [delay]);
 }
 
 export const JWTDemo = () => {
-  const { getToken } = useSession();
+  const session = useSession();
+  const [swiperRef, setSwiperRef] = React.useState(null);
+  const [tokens, setTokens] = React.useState([]);
 
-  // setBackTo0 hacks the carousel so additional tokens
-  // come in from the left
-  const [time, setTime] = React.useState(new Date().getTime());
-  const [actuallyActive, setActuallyActive] = React.useState(0);
-  const [tokens, setTokens] = React.useState({
-    list: [],
-    active: null,
-    setBackTo0: false,
-  });
-
-  useInterval(async () => {
-    const token = await getToken();
-    if (tokens.list[0] !== token) {
-      const newActive = tokens.list.length !== 0 ? actuallyActive + 1 : 0;
-      setTokens({
-        list: [token, ...tokens.list],
-        active: newActive,
-        setBackTo0: newActive === 1,
-      });
-      setActuallyActive(newActive === 1 ? 0 : newActive);
+  const prependAndSlideToStart = () => {
+    if (!swiperRef) {
+      return;
     }
-    setTime(new Date().getTime());
-  }, 100);
+    swiperRef.slideTo(1, 0);
+    swiperRef.update();
+    swiperRef.slideTo(0);
+  };
+
+  const getToken = async () => {
+    const token = await session.getToken();
+    if (tokens[0] !== token) {
+      setTokens([token, ...tokens]);
+      prependAndSlideToStart();
+    }
+  };
 
   React.useEffect(() => {
-    if (tokens.setBackTo0) {
-      setTokens({
-        list: tokens.list,
-        active: 0,
-        setBackTo0: false,
-      });
-    }
-  }, [tokens]);
+    getToken();
+  }, []);
 
-  const total = tokens.list.length;
-  if (total === 0) {
-    return null;
-  }
+  useInterval(async () => {
+    void getToken();
+  }, 1000);
+
+  const tokenCount = tokens.length;
+  const generatedTokensText = `${tokenCount} ${
+    tokenCount === 1 ? 'JWT' : 'JWTs'
+  } generated since page load`;
 
   return (
     <>
       <div className='-mx-2'>
-        <Carousel
-          key={`car` + tokens.list.length}
-          selectedItem={tokens.active}
-          onChange={index => {
-            setActuallyActive(index);
+        <Swiper
+          modules={[Pagination]}
+          pagination={{
+            dynamicBullets: true,
+            horizontalClass: 'cl-swiper-pagination',
           }}
-          showIndicators={false}
-          showThumbs={false}
-          showStatus={false}
+          onSwiper={setSwiperRef}
+          slidesPerView={1}
         >
-          {tokens.list.map((token, index) => (
-            <TokenRenderer
-              key={token}
-              token={token}
-              index={index}
-              total={total}
-              time={time}
-            />
+          {tokens.map((token, index) => (
+            <SwiperSlide key={token}>
+              <TokenCard token={token} index={index} total={tokenCount} />
+            </SwiperSlide>
           ))}
-        </Carousel>
+        </Swiper>
       </div>
-      {total > 1 && (
-        <div className='text-right text-gray-500'>
-          {total} JWTs generated since page load
-        </div>
-      )}
-      {total === 1 && (
-        <div className='text-right text-gray-500'>
-          1 JWT generated since page load
-        </div>
-      )}
+      <div className='text-right text-gray-500 -mt-7'>
+        {generatedTokensText}
+      </div>
     </>
   );
 };
