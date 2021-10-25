@@ -25,22 +25,22 @@ export const JWTDemo = () => {
   const [swiperRef, setSwiperRef] = React.useState(null);
   const [tokens, setTokens] = React.useState([]);
 
-  const prependAndSlideToStart = () => {
+  const prependAndSlideToStart = React.useCallback(() => {
     if (!swiperRef) {
       return;
     }
     swiperRef.slideTo(1, 0);
     swiperRef.update();
     swiperRef.slideTo(0);
-  };
+  }, [swiperRef]);
 
-  const getToken = async () => {
+  const getToken = React.useCallback(async () => {
     const token = await session.getToken();
     if (tokens[0] !== token) {
       setTokens([token, ...tokens]);
       prependAndSlideToStart();
     }
-  };
+  }, [session, tokens, prependAndSlideToStart]);
 
   React.useEffect(() => {
     getToken();
