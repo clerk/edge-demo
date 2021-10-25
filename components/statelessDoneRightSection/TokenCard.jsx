@@ -1,5 +1,6 @@
 import React from 'react';
 import { useForceRender } from 'utils/forceRender';
+import { parseClaims, parseToken } from 'utils/token';
 
 const getColorForPercentage = p => {
   return p < 50
@@ -15,24 +16,11 @@ const getColorForPercentage = p => {
     : 'red-600';
 };
 
-const parseToken = token => {
-  return JSON.parse(atob(token.split('.')[1]));
-};
-
 const useForceRenderWhileValid = ttl => {
   const { stop } = useForceRender();
   if (ttl === 0) {
     stop();
   }
-};
-
-const parseClaims = claims => {
-  const now = Math.round(Date.now() / 1000);
-  const issuedAt = claims.iat;
-  const expiresAt = claims.exp;
-  const totalValidForSec = expiresAt - issuedAt;
-  const timeToLiveInSec = Math.max(expiresAt - now, 0);
-  return { issuedAt, expiresAt, totalValidForSec, timeToLiveInSec, now };
 };
 
 export const TokenCard = ({ token, index, total }) => {
