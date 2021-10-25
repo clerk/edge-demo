@@ -36,10 +36,14 @@ export const JWTDemo = () => {
   }, [swiperRef]);
 
   const getToken = React.useCallback(async () => {
-    const token = await session.getToken();
-    if (tokens[0] !== token) {
-      setTokens([token, ...tokens]);
-      prependAndSlideToStart();
+    try {
+      const token = await session.getToken();
+      if (tokens[0] !== token) {
+        setTokens([token, ...tokens]);
+        prependAndSlideToStart();
+      }
+    } catch (e) {
+      console.log('JWTDemo::getToken error', e);
     }
   }, [session, tokens, prependAndSlideToStart]);
 
