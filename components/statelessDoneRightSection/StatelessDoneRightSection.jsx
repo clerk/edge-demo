@@ -42,9 +42,9 @@ export function StatelessDoneRightSection() {
                   </h2>
                 </div>
                 <p className='mt-1 text-gray-500 mb-4'>
-                  Clerk's Next.js SDK automatically refreshes tokens before they
-                  expire, so there's no extra work for developers. Watch it in
-                  real - time below.
+                  Clerk&apos;s Next.js SDK automatically refreshes tokens before
+                  they expire, so there&apos;s no extra work for developers.
+                  Watch it in real - time below.
                 </p>
               </div>
             </div>

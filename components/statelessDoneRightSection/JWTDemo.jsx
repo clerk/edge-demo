@@ -44,7 +44,7 @@ export const JWTDemo = () => {
 
   React.useEffect(() => {
     getToken();
-  }, []);
+  }, [getToken]);
 
   useInterval(async () => {
     void getToken();

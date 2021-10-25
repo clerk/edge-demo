@@ -29,7 +29,12 @@ export function HeroSection() {
               >
                 <div className='flex items-center'>
                   <div className='flex items-center justify-between w-full md:w-auto'>
-                    <Image src='/clerk-x-next.svg' height={50} width={227} />
+                    <Image
+                      src='/clerk-x-next.svg'
+                      alt='Clerk and Next.js'
+                      height={50}
+                      width={227}
+                    />
                     <div className='flex items-center md:hidden'>
                       <SignedIn>
                         <UserButton afterSignOutAllUrl='/' />
@@ -84,6 +89,7 @@ export function HeroSection() {
                       <Image
                         className='h-8 w-auto'
                         src='/clerk-x-next.svg'
+                        alt='Clerk and Next.js'
                         height={50}
                         width={227}
                       />
