@@ -21,7 +21,7 @@ export const Requester = ({
 
   return (
     <>
-      <div className={`${hidden ? 'hidden' : ''} sm:block order-${order[0]}`}>
+      <div className={`${hidden ? 'hidden' : ''} sm:block ${order[0]}`}>
         <div className='flex items-center'>
           <h2 className={`${labelColor} text-2xl font-semibold mr-2`}>
             {label}
@@ -31,7 +31,7 @@ export const Requester = ({
         <p className='mt-1 text-gray-500'>{description}</p>
       </div>
       <div
-        className={`${hidden ? 'hidden' : ''} sm:block order-${
+        className={`${hidden ? 'hidden' : ''} sm:block ${
           order[1]
         } mt-4 bg-white shadow rounded-lg overflow-hidden`}
       >

@@ -50,7 +50,7 @@ export function TwoStrategiesSection() {
             <div className='sm:grid sm:grid-cols-2 sm:gap-x-6 md-gap-x-8'>
               <Requester
                 hidden={visible !== 'stateless'}
-                order={[1, 3]}
+                order={['order-1', 'order-3']}
                 path='/api/stateless'
                 description={
                   <>
@@ -75,7 +75,7 @@ export function TwoStrategiesSection() {
               />
               <Requester
                 hidden={visible !== 'stateful'}
-                order={[2, 4]}
+                order={['order-2', 'order-4']}
                 path='/api/stateful'
                 label='Stateful'
                 description={
