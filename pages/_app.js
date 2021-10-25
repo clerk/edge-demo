@@ -1,5 +1,4 @@
 import '../styles/globals.css';
-import 'tailwindcss/tailwind.css';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
