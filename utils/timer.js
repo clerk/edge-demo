@@ -1,17 +1,17 @@
 // Utilities to measure the authentication strategies
-export const withTimer = (eventHandler) => {
-  return (event) => {
-    event.request.startTime = new Date().getTime();
-    return eventHandler(event);
+export const withTimer = next => {
+  return req => {
+    req.startTime = new Date().getTime();
+    return next(req);
   };
 };
 
-export const endTimer = (event) => {
-  event.request.endTime = new Date().getTime();
+export const endTimer = req => {
+  req.endTime = new Date().getTime();
 };
 
-export const timerResult = (event) => {
+export const timerResult = req => {
   return {
-    authenticationTime: event.request.endTime - event.request.startTime,
+    authenticationTime: req.endTime - req.startTime,
   };
 };

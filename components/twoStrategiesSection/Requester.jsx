@@ -1,5 +1,5 @@
 import React from 'react';
-import { ClerkLoading, SignedIn, SignedOut } from '@clerk/nextjs';
+import { ClerkLoading, SignedIn, SignedOut, useClerk } from '@clerk/nextjs';
 import { getVercelRegion } from 'utils/vercelRegion';
 import { SignUpCover } from 'utils/buttons';
 import { Result } from './Result';
@@ -18,23 +18,6 @@ export const Requester = ({
   buttonBgColorHover,
 }) => {
   const [result, setResult] = React.useState(null);
-
-  const makeRequest = async () => {
-    const start = new Date().getTime();
-    const response = await fetch(path, {
-      method: 'GET',
-    });
-
-    if (response.status === 200) {
-      const responseTime = new Date().getTime() - start;
-      const data = await response.json();
-      setResult({
-        responseTime: responseTime,
-        responseRegion: getVercelRegion(response.headers.get('x-vercel-id')),
-        ...data,
-      });
-    }
-  };
 
   return (
     <>
@@ -60,13 +43,14 @@ export const Requester = ({
           </div>
           <div className='flex-shrink-0'>
             <SignedIn>
-              <button
-                onClick={makeRequest}
-                type='button'
-                className={`relative inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow ${buttonColor} ${buttonBgColor} hover:${buttonBgColorHover} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:${buttonBgColorFocus}`}
-              >
-                Try it
-              </button>
+              <RequestButton
+                path={path}
+                setResult={setResult}
+                buttonColor={buttonColor}
+                buttonBgColor={buttonBgColor}
+                buttonBgColorHover={buttonBgColorHover}
+                buttonBgColorFocus={buttonBgColorFocus}
+              />
             </SignedIn>
             <SignedOut>
               <div style={{ height: '34px' }} />
@@ -88,5 +72,45 @@ export const Requester = ({
         </div>
       </div>
     </>
+  );
+};
+
+export const RequestButton = ({
+  path,
+  setResult,
+  buttonColor,
+  buttonBgColor,
+  buttonBgColorHover,
+  buttonBgColorFocus,
+}) => {
+  const { setSession } = useClerk();
+
+  const makeRequest = async () => {
+    const start = new Date().getTime();
+    const response = await fetch(path, {
+      method: 'GET',
+    });
+
+    if (response.status === 200) {
+      const responseTime = new Date().getTime() - start;
+      const data = await response.json();
+      setResult({
+        responseTime: responseTime,
+        responseRegion: getVercelRegion(response.headers.get('x-vercel-id')),
+        ...data,
+      });
+    } else if (response.status === 403) {
+      setSession(null);
+    }
+  };
+
+  return (
+    <button
+      onClick={makeRequest}
+      type='button'
+      className={`relative inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow ${buttonColor} ${buttonBgColor} hover:${buttonBgColorHover} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:${buttonBgColorFocus}`}
+    >
+      Try it
+    </button>
   );
 };

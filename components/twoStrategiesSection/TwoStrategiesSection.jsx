@@ -80,9 +80,9 @@ export function TwoStrategiesSection() {
                 label='Stateful'
                 description={
                   <>
-                    {'Clerks API is used to authenticate the user. This adds'}
-                    {'network latency, but enables sessions to be revoked'}
-                    {'immediately.'}
+                    Clerks API is used to authenticate the user. This adds
+                    network latency, but enables sessions to be revoked
+                    immediately.
                   </>
                 }
                 labelColor='text-gray-900'
