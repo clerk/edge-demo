@@ -1,6 +1,8 @@
 import '../styles/globals.css';
 import 'tailwindcss/tailwind.css';
-import 'react-responsive-carousel/lib/styles/carousel.min.css';
+import 'swiper/css';
+import 'swiper/css/pagination';
+import 'swiper/css/navigation';
 import { ClerkProvider } from '@clerk/nextjs';
 
 function MyApp({ Component, pageProps }) {

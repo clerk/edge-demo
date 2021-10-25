@@ -1,4 +1,5 @@
 import React from 'react';
+import { useForceRender } from 'utils/forceRender';
 
 const getColorForPercentage = p => {
   return p < 50
@@ -18,6 +19,13 @@ const parseToken = token => {
   return JSON.parse(atob(token.split('.')[1]));
 };
 
+const useForceRenderWhileValid = ttl => {
+  const { stop } = useForceRender();
+  if (ttl === 0) {
+    stop();
+  }
+};
+
 const parseClaims = claims => {
   const now = Math.round(Date.now() / 1000);
   const issuedAt = claims.iat;
@@ -27,21 +35,12 @@ const parseClaims = claims => {
   return { issuedAt, expiresAt, totalValidForSec, timeToLiveInSec, now };
 };
 
-const useForceRender = (delay = 1) => {
-  const [s, ss] = React.useState(0);
-  React.useEffect(() => {
-    const id = setInterval(() => ss(s + 1), delay);
-    return () => clearInterval(id);
-  });
-};
-
-export const TokenRenderer = ({ token, index, total }) => {
-  useForceRender();
+export const TokenCard = ({ token, index, total }) => {
   const { totalValidForSec, timeToLiveInSec, issuedAt } = parseClaims(
     parseToken(token),
   );
-  const percentGone =
-    100 - Math.round((100 * timeToLiveInSec) / totalValidForSec);
+  useForceRenderWhileValid(timeToLiveInSec);
+  const percentGone = 100 - (100 * timeToLiveInSec) / totalValidForSec;
 
   const barColor = 'bg-' + getColorForPercentage(percentGone);
   const textColor = 'text-' + getColorForPercentage(percentGone);
@@ -60,7 +59,7 @@ export const TokenRenderer = ({ token, index, total }) => {
           </h3>
         </div>
         <div
-          className={`h-1 transition-all ease-linear duration-100 ${barColor}`}
+          className={`h-1 transition-all ease-linear duration-1000 ${barColor}`}
           style={{ width: `${percentGone}%` }}
         />
         <div className='px-7 py-5'>
