@@ -1,9 +1,9 @@
 import React from 'react';
 import { useSession } from '@clerk/nextjs';
-import { Pagination } from 'swiper';
+import { Pagination, Navigation } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { TokenCard } from './TokenCard';
-
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/solid';
 function useInterval(callback, delay) {
   const savedCallback = React.useRef(callback);
 
@@ -57,12 +57,19 @@ export const JWTDemo = () => {
 
   return (
     <>
-      <div className='-mx-2'>
+      <div className='-mx-2 relative'>
         <Swiper
-          modules={[Pagination]}
+          modules={[Pagination, Navigation]}
           pagination={{
             dynamicBullets: true,
-            horizontalClass: 'cl-swiper-pagination',
+            horizontalClass: 'swiper-pagination',
+            clickable: true,
+          }}
+          navigation={{
+            nextEl: '.next',
+            prevEl: '.prev',
+            hiddenClass: 'hidden',
+            disabledClass: 'hidden',
           }}
           onSwiper={setSwiperRef}
           slidesPerView={1}
@@ -72,6 +79,12 @@ export const JWTDemo = () => {
               <TokenCard token={token} index={index} total={tokenCount} />
             </SwiperSlide>
           ))}
+          <button className='prev absolute z-10 bg-opacity-10 hover:bg-opacity-20 bg-gray-900 top-0 bottom-8 rounded-l-xl left-0 w-8'>
+            <ChevronLeftIcon className='text-white filter drop-shadow' />
+          </button>
+          <button className='next absolute z-10 bg-opacity-10 hover:bg-opacity-20 bg-gray-900 top-0 bottom-8 rounded-r-xl right-0 w-8'>
+            <ChevronRightIcon className='text-white filter drop-shadow' />
+          </button>
         </Swiper>
       </div>
       <div className='text-right text-gray-500 -mt-7'>

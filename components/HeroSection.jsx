@@ -31,7 +31,10 @@ export function HeroSection() {
                   <div className='flex items-center justify-between w-full md:w-auto'>
                     <Image src='/clerk-x-next.svg' height={50} width={227} />
                     <div className='flex items-center md:hidden'>
-                      <Popover.Button className='bg-gray-50 rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500'>
+                      <SignedIn>
+                        <UserButton afterSignOutAllUrl='/' />
+                      </SignedIn>
+                      <Popover.Button className='ml-4 bg-gray-50 rounded-md p-2 inline-flex items-center justify-center text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500'>
                         <span className='sr-only'>Open main menu</span>
                         <MenuIcon className='h-6 w-6' aria-hidden='true' />
                       </Popover.Button>
@@ -49,7 +52,7 @@ export function HeroSection() {
                     </a>
                   ))}
                 </div>
-                <div className='hidden md:relative md:flex md:items-center w-20'>
+                <div className='hidden md:relative md:flex md:items-center md:justify-end w-20'>
                   <SignedIn>
                     <UserButton afterSignOutAllUrl='/' />
                   </SignedIn>
