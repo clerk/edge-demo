@@ -40,8 +40,7 @@ export const TokenCard = ({ token, index, total }) => {
     parseToken(token),
   );
   useForceRenderWhileValid(timeToLiveInSec);
-  const percentGone =
-    100 - Math.round((100 * timeToLiveInSec) / totalValidForSec);
+  const percentGone = 100 - (100 * timeToLiveInSec) / totalValidForSec;
 
   const barColor = 'bg-' + getColorForPercentage(percentGone);
   const textColor = 'text-' + getColorForPercentage(percentGone);
@@ -60,7 +59,7 @@ export const TokenCard = ({ token, index, total }) => {
           </h3>
         </div>
         <div
-          className={`h-1 transition-all ease-linear duration-100 ${barColor}`}
+          className={`h-1 transition-all ease-linear duration-1000 ${barColor}`}
           style={{ width: `${percentGone}%` }}
         />
         <div className='px-7 py-5'>

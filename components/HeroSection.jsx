@@ -49,7 +49,7 @@ export function HeroSection() {
                     </a>
                   ))}
                 </div>
-                <div className='hidden md:relative md:flex md:items-center'>
+                <div className='hidden md:relative md:flex md:items-center w-20'>
                   <SignedIn>
                     <UserButton afterSignOutAllUrl='/' />
                   </SignedIn>
