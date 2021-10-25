@@ -8,10 +8,13 @@ import { SignInButton } from 'utils/buttons';
 import { PatternImage } from './Pattern';
 
 const NAVBAR_LINKS = [
-  { name: 'Clerk Homepage', href: 'https://clerk.dev' },
+  {
+    name: 'Clerk Homepage',
+    href: 'https://clerk.dev?utm_source=demo&utm_medium=next-edge-auth',
+  },
   {
     name: 'More about Clerk and Next.js',
-    href: 'https://clerk.dev/solutions/nextjs-authentication',
+    href: 'https://clerk.dev/solutions/nextjs-authentication?utm_source=demo&utm_medium=next-edge-auth',
   },
 ];
 
