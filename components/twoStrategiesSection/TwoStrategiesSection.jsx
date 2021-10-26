@@ -67,6 +67,7 @@ export function TwoStrategiesSection() {
                 }
                 labelColor='text-indigo-600'
                 button='Try stateless auth'
+                buttonId='stateless_request'
                 buttonColor='text-white'
                 buttonShadow='shadow-lg'
                 buttonBgColor='bg-indigo-600'
@@ -86,6 +87,7 @@ export function TwoStrategiesSection() {
                   </>
                 }
                 labelColor='text-gray-900'
+                buttonId='stateful_request'
                 button='Try stateful auth'
                 buttonColor='text-indigo-700'
                 buttonShadow='shadow-sm'

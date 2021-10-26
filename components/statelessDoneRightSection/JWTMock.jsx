@@ -39,7 +39,7 @@ export const JWTMock = () => {
               </div>
             </dl>
           </div>
-          <SignInCover>Sign in to see JWT demo</SignInCover>
+          <SignInCover id='jtw_signin'>Sign in to see JWT demo</SignInCover>
         </div>
       </div>
     </div>

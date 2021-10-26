@@ -84,10 +84,16 @@ export const JWTDemo = () => {
               <TokenCard token={token} index={index} total={tokenCount} />
             </SwiperSlide>
           ))}
-          <button className='prev absolute z-10 bg-opacity-5 hover:bg-opacity-20 bg-gray-900 top-0 bottom-8 rounded-l-xl left-0 w-8'>
+          <button
+            id='newer_token'
+            className='prev absolute z-10 bg-opacity-5 hover:bg-opacity-20 bg-gray-900 top-0 bottom-8 rounded-l-xl left-0 w-8'
+          >
             <ChevronLeftIcon className='text-white filter drop-shadow' />
           </button>
-          <button className='next absolute z-10 bg-opacity-5 hover:bg-opacity-20 bg-gray-900 top-0 bottom-8 rounded-r-xl right-0 w-8 '>
+          <button
+            id='older_token'
+            className='next absolute z-10 bg-opacity-5 hover:bg-opacity-20 bg-gray-900 top-0 bottom-8 rounded-r-xl right-0 w-8 '
+          >
             <ChevronRightIcon className='text-white filter drop-shadow' />
           </button>
         </Swiper>
