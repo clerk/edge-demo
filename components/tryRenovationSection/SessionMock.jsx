@@ -40,7 +40,9 @@ export const SessionMock = () => {
             <dd className='mt-1 text-gray-900'>--</dd>
           </div>
         </dl>
-        <SignInCover>Sign in to see device details</SignInCover>
+        <SignInCover id='device_signin'>
+          Sign in to see device details
+        </SignInCover>
       </div>
     </div>
   );
