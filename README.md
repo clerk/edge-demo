@@ -25,7 +25,7 @@ Then open `.env.local` and set the environment variables to match the settings o
 ```bash
 NEXT_PUBLIC_CLERK_FRONTEND_API=foo.bar.lcl.dev
 CLERK_API_KEY=test_lcyh0EbavaYPZBnyUbRBGtSo1dELNxJSLC
-CLERK_JWT_KEY=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEArORRXR/gmiLWsocjb3sJZafaKE59Z7iaQK73c/S27aKaji686LLKPO+c57BThYGKl2obm5gG0q2QFsuxP/QOiHx/YEa+EVkNZBXTA9Er6M8pgzV953ZhLlj8w9PghsNTlmwXB87UJjRZpjZ773X63ykouqao0W9x8fE68R8L59Rv4iLtZ/u4CIx3djPKUF4ebVcK7rAexxvs9WGT+Ds01a1wfCBqcGVo0wA47xg63ym+XqFCTaEExNC1EZycIBq6aXw9fs6XG4x4gRshGV8NgqjKC5ETEJJy0A24lNbX284BcPg6HqOEnQegvhXyWhcRK3EdE3EuoajhV1PpAeJiAwIDAQAB
+CLERK_JWT_KEY=YOUR_CLERK_JWT_KEY_GOES_HERE
 ```
 
 Next, run Next.js in development mode:
