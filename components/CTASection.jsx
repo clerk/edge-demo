@@ -10,13 +10,13 @@ export function CTASection() {
         </p>
         <div className='sm:flex sm:justify-center mt-8'>
           <a
-            href='https://dashboard.clerk.dev/sign-up?utm_source=demo&utm_medium=next-edge-auth'
+            href='https://dashboard.clerk.dev/sign-up?utm_source=edge-demo&utm_medium=next-edge-auth&utm_campaign=start-building'
             className='mb-4 w-full inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-indigo-600 bg-white hover:bg-indigo-50 sm:w-auto'
           >
             Start building
           </a>
           <a
-            href='https://clerk.dev/solutions/nextjs-authentication?utm_source=demo&utm_medium=next-edge-auth'
+            href='https://clerk.dev/solutions/nextjs-authentication?utm_source=edge-demo&utm_medium=next-edge-auth&utm_campaign=more-cta'
             className='sm:ml-4 mb-4 w-full inline-flex items-center justify-center px-5 py-3 border border-white text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:w-auto'
           >
             More about Clerk and Next.js

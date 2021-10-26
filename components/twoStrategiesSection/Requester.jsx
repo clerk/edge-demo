@@ -12,6 +12,7 @@ export const Requester = ({
   badge,
   description,
   labelColor,
+  buttonId,
   buttonColor,
   buttonBgColor,
   buttonBgColorFocus,
@@ -46,6 +47,7 @@ export const Requester = ({
               <RequestButton
                 path={path}
                 setResult={setResult}
+                buttonId={buttonId}
                 buttonColor={buttonColor}
                 buttonBgColor={buttonBgColor}
                 buttonBgColorHover={buttonBgColorHover}
@@ -65,7 +67,7 @@ export const Requester = ({
         <div className='px-4 py-3 relative'>
           <Result result={result} />
           <SignedOut>
-            <SignInCover>
+            <SignInCover id={`${buttonId}_signup`}>
               Sign in to test {label.toLowerCase()} latency
             </SignInCover>
           </SignedOut>
@@ -78,6 +80,7 @@ export const Requester = ({
 export const RequestButton = ({
   path,
   setResult,
+  buttonId,
   buttonColor,
   buttonBgColor,
   buttonBgColorHover,
@@ -106,6 +109,7 @@ export const RequestButton = ({
 
   return (
     <button
+      id={buttonId}
       onClick={makeRequest}
       type='button'
       className={`relative inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow ${buttonColor} ${buttonBgColor} hover:${buttonBgColorHover} focus:outline-none focus:ring-2 focus:ring-offset-2 focus:${buttonBgColorFocus}`}
