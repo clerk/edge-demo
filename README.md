@@ -1,10 +1,10 @@
 # Clerk Authentication at the edge
 
-This demo features authentication at the edge using [Clerk](https://clerk.dev/?utm_source=nextjs&utm_medium=edge-authentication).
+This demo features authentication at the edge using [Clerk](https://clerk.dev/?utm_source=github&utm_medium=demo&utm_campaign=clerk-edge).
 
 ## Demo
 
-https://edge.clerk.app/
+[https://edge.clerk.app/](https://edge.clerk.app/?utm_source=github&utm_medium=repo&utm_campaign=demo-link)
 
 ### One-Click Deploy
 
@@ -14,7 +14,7 @@ Deploy the example using [Vercel](https://vercel.com?utm_source=github&utm_mediu
 
 ## Getting Started
 
-You'll need to have an account with [Clerk](https://clerk.dev/?utm_source=nextjs&utm_medium=edge-authentication). Once that's done, copy the `.env.example` file in this directory to `.env.local` (which will be ignored by Git):
+You'll need to have an account with [Clerk](https://clerk.dev/?utm_source=github&utm_medium=demo&utm_campaign=clerk-edge). Once that's done, copy the `.env.example` file in this directory to `.env.local` (which will be ignored by Git):
 
 ```bash
 cp .env.example .env.local
