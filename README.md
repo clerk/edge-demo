@@ -1,3 +1,8 @@
+> [!WARNING]  
+> This repository has been archived as of January 11, 2024 and will not be further maintained. If you are curious about this repo and looking for help, please join our Discord https://clerk.com/discord
+
+
+
 # Clerk Authentication at the edge
 
 This demo features authentication at the edge using [Clerk](https://clerk.dev/?utm_source=github&utm_medium=demo&utm_campaign=clerk-edge).
